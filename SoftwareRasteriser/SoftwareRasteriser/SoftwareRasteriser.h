@@ -37,6 +37,8 @@ class Texture;
 
 class SoftwareRasteriser : public Window	{
 public:
+	static float ScreenAreaOfTri(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2);
+
 	SoftwareRasteriser(uint width, uint height);
 	~SoftwareRasteriser(void);
 
@@ -60,6 +62,9 @@ protected:
 
 	void	RasterisePointsMesh(RenderObject*o);
 	void	RasteriseLinesMesh(RenderObject*o);
+	void	RasteriseTriMesh(RenderObject*o);
+
+	BoundingBox CalculateBoxForTri(const Vector4 &a, const Vector4 &b, const Vector4 &c);
 
 	virtual void Resize();
 
@@ -67,24 +72,28 @@ protected:
 		const Colour &colA = Colour(255,255,255,255), const Colour &colB = Colour(255,255,255,255), 
 		const Vector2 &texA = Vector2(0,0) , const Vector2 &texB = Vector2(1,1));
 
+	void	RasteriseTri(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
+		const Colour &c0 = Colour(), const Colour &c1 = Colour(), const Colour &c2 = Colour(),
+		const Vector3 &t0 = Vector3(), const Vector3 &t1 = Vector3(), const Vector3 &t2 = Vector3());
+
+	void	RasteriseTriSpans(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
+		const Colour &c0 = Colour(), const Colour &c1 = Colour(), const Colour &c2 = Colour(),
+		const Vector3 &t0 = Vector3(), const Vector3 &t1 = Vector3(), const Vector3 &t2 = Vector3());
+
+	void	RasteriseTriEdgeSpans(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2, const Vector4 &v3);
+
 	inline void	ShadePixel(uint x, uint y, const Colour&c) {
-		if(y >= screenHeight) {
+		if (y >= screenHeight) {
 			return;
 		}
-		if(x >= screenWidth) {
+		if (x >= screenWidth) {
 			return;
 		}
 
-		int index =  (y * screenWidth) + x;
+		int index = (y * screenWidth) + x;
 
 		buffers[currentDrawBuffer][index] = c;
 	}
-
-	void	RasteriseTriMesh(RenderObject*o);
-
-	void	RasteriseTri(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2, 
-		const Colour &c0 = Colour(), const Colour &c1 = Colour(), const Colour &c2= Colour(),
-		const Vector3 &t0 = Vector3(), const Vector3 &t1= Vector3(), const Vector3 &t2	= Vector3());
 	
 	int		currentDrawBuffer;
 

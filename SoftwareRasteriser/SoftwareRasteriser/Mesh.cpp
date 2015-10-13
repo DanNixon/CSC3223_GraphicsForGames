@@ -34,3 +34,16 @@ Mesh * Mesh::GenerateLine(const Vector3 &from, const Vector3 &to) {
 	m->vertices[1] = Vector4(to.x, to.y, to.z, 1.0f);
 	return m;
 }
+
+Mesh * Mesh::GenerateTriangle() {
+	Mesh * m = new Mesh();
+	m->type = PRIMITIVE_TRIANGLES;
+	m->numVertices = 3;
+
+	m->vertices = new Vector4[m->numVertices];
+	m->vertices[0] = Vector4(0.5f, -0.5f, 0.0f, 1.0f);
+	m->vertices[1] = Vector4(0.0f, 0.5f, 0.0f, 1.0f);
+	m->vertices[2] = Vector4(-0.5f, -0.5f, 0.0f, 1.0f);
+
+	return m;
+}

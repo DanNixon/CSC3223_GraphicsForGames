@@ -33,6 +33,11 @@ get exceptions if you resized to a bigger screen area. Sorry about that.
 */
 //#define USE_OS_BUFFERS
 
+float SoftwareRasteriser::ScreenAreaOfTri(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2) {
+	float area = ((v0.x*v1.y) + (v1.x*v2.y) + (v2.x*v0.y)) - ((v1.x*v0.y) + (v2.x*v1.y) + (v0.x*v2.y));
+	return area * 0.05f;
+}
+
 SoftwareRasteriser::SoftwareRasteriser(uint width, uint height)	: Window(width, height){
 	currentDrawBuffer	= 0;
 
@@ -122,6 +127,9 @@ void	SoftwareRasteriser::DrawObject(RenderObject*o) {
 	case PRIMITIVE_LINES:
 		RasteriseLinesMesh(o);
 		break;
+	case PRIMITIVE_TRIANGLES:
+		RasteriseTriMesh(o);
+		break;
 	}
 }
 
@@ -182,6 +190,112 @@ void	SoftwareRasteriser::RasteriseLine(
 	}
 }
 
+void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
+	const Colour &c0, const Colour &c1, const Colour &c2,
+	const Vector3 &t0, const Vector3 &t1, const Vector3 &t2) {
+	Vector4 v0p = portMatrix * v0;
+	Vector4 v1p = portMatrix * v1;
+	Vector4 v2p = portMatrix * v2;
+
+	BoundingBox b = CalculateBoxForTri(v0p, v1p, v2p);
+	float triArea = ScreenAreaOfTri(v0p, v1p, v2p);
+
+	float subTriArea[3];
+	Vector4 screenPos(0, 0, 0, 1);
+
+	for (float y = b.topLeft.y; y < b.bottomRight.y; ++y) {
+		for (float x = b.topLeft.x; x < b.bottomRight.x; ++x) {
+			screenPos.x = x;
+			screenPos.y = y;
+
+			subTriArea[0] = abs(ScreenAreaOfTri(v0p, screenPos, v1p));
+			subTriArea[1] = abs(ScreenAreaOfTri(v1p, screenPos, v2p));
+			subTriArea[2] = abs(ScreenAreaOfTri(v2p, screenPos, v0p));
+
+			float triSum = subTriArea[0] + subTriArea[1] + subTriArea[2];
+
+			// Check if pixel is outside of triangle
+			if (triSum > (triArea + 0.01f))
+				continue;
+
+			// Check if tringle is very small
+			if (triSum < 1.0f)
+				continue;
+
+			// Pixel is in triangle, so shade it
+			ShadePixel((int)x, (int)y, Colour::White);
+		}
+	}
+}
+
+void SoftwareRasteriser::RasteriseTriSpans(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
+	const Colour &c0, const Colour &c1, const Colour &c2,
+	const Vector3 &t0, const Vector3 &t1, const Vector3 &t2) {
+	Vector4 v0p = portMatrix * v0;
+	Vector4 v1p = portMatrix * v1;
+	Vector4 v2p = portMatrix * v2;
+
+	float edge0y = abs(v0p.y - v1p.y);
+	float edge1y = abs(v1p.y - v2p.y);
+	float edge2y = abs(v2p.y - v0p.y);
+
+	// Edhe 0 is longest
+	if (edge0y >= edge1y && edge0y >= edge2y) {
+		RasteriseTriEdgeSpans(v0p, v1p, v2p, v0p);
+		RasteriseTriEdgeSpans(v0p, v1p, v1p, v2p);
+	}
+	// Edge 1 is longest
+	else if (edge1y >= edge0y && edge1y >= edge2y) {
+		RasteriseTriEdgeSpans(v1p, v2p, v2p, v0p);
+		RasteriseTriEdgeSpans(v1p, v2p, v0p, v1p);
+	}
+	// Edge 2 is longest
+	else {
+		RasteriseTriEdgeSpans(v2p, v0p, v0p, v1p);
+		RasteriseTriEdgeSpans(v2p, v0p, v1p, v2p);
+	}
+}
+
+void	SoftwareRasteriser::RasteriseTriEdgeSpans(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2, const Vector4 &v3) {
+	Vector4 longEdge0 = v0;
+	Vector4 longEdge1 = v1;
+	Vector4 shortEdge0 = v2;
+	Vector4 shortEdge1 = v3;
+
+	if (longEdge1.y < longEdge0.y) {
+		longEdge0 = v1;
+		longEdge1 = v0;
+	}
+	if (shortEdge1.y < shortEdge0.y) {
+		shortEdge0 = v3;
+		shortEdge1 = v2;
+	}
+
+	Vector4 longDiff = longEdge1 - longEdge0;
+	Vector4 shortDiff = shortEdge1 - shortEdge0;
+	
+	float longStep = longDiff.x / longDiff.y;
+	float shortStep = shortDiff.x / shortDiff.y;
+
+	float startOff = (shortEdge0.y - longEdge0.y) / longDiff.y;
+	Vector4 start = longEdge0 + (longDiff * startOff);
+
+	float endOff = (start.y - shortEdge0.y) / shortDiff.y;
+	Vector4 end = shortEdge0 + (shortDiff * endOff);
+
+	for (float y = shortEdge0.y; y < shortEdge1.y; ++y) {
+		float minX = min(start.x, end.x);
+		float maxX = max(start.x, end.x);
+
+		for (int x = minX; x < maxX; ++x) {
+			ShadePixel((int)x, (int)y, Colour::White);
+		}
+
+		start.x += longStep;
+		end.x += shortStep;
+	}
+}
+
 void	SoftwareRasteriser::RasterisePointsMesh(RenderObject*o) {
 	Matrix4 mvp = viewProjMatrix * o->GetModelMatrix();
 	for (uint i = 0; i < o->GetMesh()->numVertices; i++) {
@@ -204,5 +318,44 @@ void	SoftwareRasteriser::RasteriseLinesMesh(RenderObject*o) {
 }
 
 void	SoftwareRasteriser::RasteriseTriMesh(RenderObject*o) {
+	Matrix4 mvp = viewProjMatrix * o->GetModelMatrix();
 
+	for (uint i = 0; i < o->GetMesh()->numVertices; i += 3) {
+		Vector4 v0 = mvp * o->GetMesh()->vertices[i];
+		Vector4 v1 = mvp * o->GetMesh()->vertices[i+1];
+		Vector4 v2 = mvp * o->GetMesh()->vertices[i+2];
+
+		v0.SelfDivisionByW();
+		v1.SelfDivisionByW();
+		v2.SelfDivisionByW();
+
+		//RasteriseTri(v0, v1, v2);
+		RasteriseTriSpans(v0, v1, v2);
+	}
+}
+
+BoundingBox SoftwareRasteriser::CalculateBoxForTri(const Vector4 &a, const Vector4 &b, const Vector4 &c){
+	BoundingBox box;
+
+	box.topLeft.x = a.x;
+	box.topLeft.x = min(box.topLeft.x, b.x);
+	box.topLeft.x = min(box.topLeft.x, c.x);
+	box.topLeft.x = max(box.topLeft.x, 0.0f);
+
+	box.topLeft.y = a.y;
+	box.topLeft.y = min(box.topLeft.y, b.y);
+	box.topLeft.y = min(box.topLeft.y, c.y);
+	box.topLeft.y = max(box.topLeft.y, 0.0f);
+
+	box.bottomRight.x = a.x;
+	box.bottomRight.x = max(box.bottomRight.x, b.x);
+	box.bottomRight.x = max(box.bottomRight.x, c.x);
+	box.bottomRight.x = min(box.bottomRight.x, screenWidth);
+
+	box.bottomRight.y = a.y;
+	box.bottomRight.y = max(box.bottomRight.y, b.y);
+	box.bottomRight.y = max(box.bottomRight.y, c.y);
+	box.bottomRight.y = min(box.bottomRight.y, screenHeight);
+
+	return box;
 }
