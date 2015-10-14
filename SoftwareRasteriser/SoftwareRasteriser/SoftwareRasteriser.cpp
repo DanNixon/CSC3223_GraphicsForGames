@@ -177,8 +177,13 @@ void	SoftwareRasteriser::RasteriseLine(
 	float absSlope = abs(slope);
 	float error = 0.0f;
 
+	const float reciprocalRange = 1.0f / range;
+
 	for (int i = 0; i < range; i++) {
-		ShadePixel(x, y, Colour::White);
+		float t = i * reciprocalRange;
+		Colour c = colB * t + colA * (1.0f - t);
+
+		ShadePixel(x, y, c);
 
 		error += absSlope;
 
@@ -197,8 +202,9 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
 	Vector4 v1p = portMatrix * v1;
 	Vector4 v2p = portMatrix * v2;
 
-	BoundingBox b = CalculateBoxForTri(v0p, v1p, v2p);
-	float triArea = ScreenAreaOfTri(v0p, v1p, v2p);
+	const BoundingBox b = CalculateBoxForTri(v0p, v1p, v2p);
+	const float triArea = ScreenAreaOfTri(v0p, v1p, v2p);
+	const float areaRecip = 1.0f / triArea;
 
 	float subTriArea[3];
 	Vector4 screenPos(0, 0, 0, 1);
@@ -222,8 +228,14 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
 			if (triSum < 1.0f)
 				continue;
 
+			const float alpha = subTriArea[1] * areaRecip;
+			const float beta = subTriArea[2] * areaRecip;
+			const float gamma = subTriArea[0] * areaRecip;
+
+			Colour c = ((c0 * alpha) + (c1 * beta) + (c2 * gamma));
+
 			// Pixel is in triangle, so shade it
-			ShadePixel((int)x, (int)y, Colour::White);
+			ShadePixel((int)x, (int)y, c);
 		}
 	}
 }
@@ -287,7 +299,7 @@ void	SoftwareRasteriser::RasteriseTriEdgeSpans(const Vector4 &v0, const Vector4 
 		float minX = min(start.x, end.x);
 		float maxX = max(start.x, end.x);
 
-		for (int x = minX; x < maxX; ++x) {
+		for (float x = minX; x < maxX; ++x) {
 			ShadePixel((int)x, (int)y, Colour::White);
 		}
 
@@ -311,9 +323,14 @@ void	SoftwareRasteriser::RasteriseLinesMesh(RenderObject*o) {
 	for (uint i = 0; i < o->GetMesh()->numVertices; i += 2) {
 		Vector4 v0 = mvp * o->GetMesh()->vertices[i];
 		Vector4 v1 = mvp * o->GetMesh()->vertices[i+1];
+
+		Colour c0 = o->GetMesh()->colours[0];
+		Colour c1 = o->GetMesh()->colours[1];
+
 		v0.SelfDivisionByW();
 		v1.SelfDivisionByW();
-		RasteriseLine(v0, v1);
+
+		RasteriseLine(v0, v1, c0, c1);
 	}
 }
 
@@ -325,12 +342,16 @@ void	SoftwareRasteriser::RasteriseTriMesh(RenderObject*o) {
 		Vector4 v1 = mvp * o->GetMesh()->vertices[i+1];
 		Vector4 v2 = mvp * o->GetMesh()->vertices[i+2];
 
+		Colour c0 = o->GetMesh()->colours[0];
+		Colour c1 = o->GetMesh()->colours[1];
+		Colour c2 = o->GetMesh()->colours[2];
+
 		v0.SelfDivisionByW();
 		v1.SelfDivisionByW();
 		v2.SelfDivisionByW();
 
-		//RasteriseTri(v0, v1, v2);
-		RasteriseTriSpans(v0, v1, v2);
+		RasteriseTri(v0, v1, v2, c0, c1, c2);
+		//RasteriseTriSpans(v0, v1, v2);
 	}
 }
 
