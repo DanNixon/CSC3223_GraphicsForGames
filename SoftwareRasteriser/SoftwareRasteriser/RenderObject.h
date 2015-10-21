@@ -4,12 +4,12 @@ Implements:
 Author:Rich Davison	<richard.davison4@newcastle.ac.uk>
 Description: Class to represent an object in our basic rendering program
 
--_-_-_-_-_-_-_,------,   
+-_-_-_-_-_-_-_,------,
 _-_-_-_-_-_-_-|   /\_/\   NYANYANYAN
 -_-_-_-_-_-_-~|__( ^ .^) /
-_-_-_-_-_-_-_-""  ""   
+_-_-_-_-_-_-_-""  ""
 
-*//////////////////////////////////////////////////////////////////////////////
+*/ /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
@@ -19,22 +19,30 @@ _-_-_-_-_-_-_-""  ""
 
 class Texture;
 
-class RenderObject	{
+class RenderObject
+{
 public:
-	RenderObject(void);
-	~RenderObject(void);
+  RenderObject(void);
+  ~RenderObject(void);
 
-	Mesh*	 GetMesh()	 { return mesh;}
-	Texture* GetTexure() { return texture;}
+  Mesh *GetMesh()
+  {
+    return mesh;
+  }
 
-	Matrix4 GetModelMatrix() {
-		return modelMatrix;
-	}
+  Texture *GetTexure()
+  {
+    return texture;
+  }
 
-//protected:
-	Matrix4 modelMatrix;
+  Matrix4 GetModelMatrix()
+  {
+    return modelMatrix;
+  }
 
-	Texture*	texture;
-	Mesh*		mesh;
+  // protected:
+  Matrix4 modelMatrix;
+
+  Texture *texture;
+  Mesh *mesh;
 };
-

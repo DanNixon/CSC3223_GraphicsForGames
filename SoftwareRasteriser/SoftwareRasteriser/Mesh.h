@@ -5,12 +5,12 @@ Author:Rich Davison	<richard.davison4@newcastle.ac.uk>
 Description: Class to represent the geometric data that makes up the meshes
 we render on screen.
 
--_-_-_-_-_-_-_,------,   
+-_-_-_-_-_-_-_,------,
 _-_-_-_-_-_-_-|   /\_/\   NYANYANYAN
 -_-_-_-_-_-_-~|__( ^ .^) /
-_-_-_-_-_-_-_-""  ""   
+_-_-_-_-_-_-_-""  ""
 
-*//////////////////////////////////////////////////////////////////////////////
+*/ /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
@@ -26,31 +26,36 @@ _-_-_-_-_-_-_-""  ""
 using std::ifstream;
 using std::string;
 
-enum PrimitiveType {
-	PRIMITIVE_POINTS,
-	PRIMITIVE_LINES,
-	PRIMITIVE_TRIANGLES
+enum PrimitiveType
+{
+  PRIMITIVE_POINTS,
+  PRIMITIVE_LINES,
+  PRIMITIVE_TRIANGLES
 };
 
-class Mesh	{
-	friend class SoftwareRasteriser;
+class Mesh
+{
+  friend class SoftwareRasteriser;
+
 public:
-	Mesh(void);
-	~Mesh(void);
+  Mesh(void);
+  ~Mesh(void);
 
-	static Mesh*	GeneratePoint(const Vector3 &pos);
-	static Mesh*	GenerateLine(const Vector3 &from, const Vector3 &to);
-	static Mesh*	GenerateTriangle();
+  static Mesh *GeneratePoint(const Vector3 &pos);
+  static Mesh *GenerateLine(const Vector3 &from, const Vector3 &to);
+  static Mesh *GenerateTriangle();
 
-	PrimitiveType	GetType() { return type;}
+  PrimitiveType GetType()
+  {
+    return type;
+  }
 
 protected:
-	PrimitiveType	type;
+  PrimitiveType type;
 
-	uint			numVertices;
+  uint numVertices;
 
-	Vector4*		vertices;
-	Colour*			colours;
-	Vector2*		textureCoords;	//We get onto what to do with these later on...
+  Vector4 *vertices;
+  Colour *colours;
+  Vector2 *textureCoords; // We get onto what to do with these later on...
 };
-
