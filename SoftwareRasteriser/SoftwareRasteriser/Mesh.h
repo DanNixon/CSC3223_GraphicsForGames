@@ -41,6 +41,7 @@ public:
   Mesh(void);
   ~Mesh(void);
 
+  static Mesh *LoadMeshFile(const string & filename);
   static Mesh *GeneratePoint(const Vector3 &pos);
   static Mesh *GenerateLine(const Vector3 &from, const Vector3 &to);
   static Mesh *GenerateTriangle();

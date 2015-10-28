@@ -18,6 +18,48 @@ Mesh::~Mesh(void)
   delete[] textureCoords;
 }
 
+Mesh * Mesh::LoadMeshFile(const string & filename)
+{
+  ifstream f(filename);
+
+  if (!f)
+    return NULL;
+
+  Mesh *m = new Mesh();
+  m->type = PRIMITIVE_TRIANGLES;
+  f >> m->numVertices;
+
+  int hasTex = 0;
+  f >> hasTex;
+
+  int hasColour = 0;
+  f >> hasColour;
+
+  m->vertices = new Vector4[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
+  m->colours = new Colour[m->numVertices];
+
+  for (int i = 0; i < m->numVertices; ++i)
+  {
+    f >> m->vertices[i].x;
+    f >> m->vertices[i].y;
+    f >> m->vertices[i].z;
+  }
+
+  if (hasColour)
+  {
+    for (int i = 0; i < m->numVertices; ++i)
+    {
+      f >> m->colours[i].r;
+      f >> m->colours[i].g;
+      f >> m->colours[i].b;
+      f >> m->colours[i].a;
+    }
+  }
+
+  return m;
+}
+
 Mesh *Mesh::GeneratePoint(const Vector3 &from)
 {
   Mesh *m = new Mesh();
