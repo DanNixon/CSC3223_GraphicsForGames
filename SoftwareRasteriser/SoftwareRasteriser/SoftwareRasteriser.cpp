@@ -202,8 +202,10 @@ void SoftwareRasteriser::RasteriseLine(const Vector4 &v0, const Vector4 &v1, con
   {
     float t = i * reciprocalRange;
     Colour c = colB * t + colA * (1.0f - t);
+    float zVal = v1p.z * (i * reciprocalRange) + v0p.z * (1.0 - (i * reciprocalRange));
 
-    ShadePixel(x, y, c);
+    if (DepthFunc((int) x, (int) y, zVal))
+      ShadePixel(x, y, c);
 
     error += absSlope;
 
@@ -257,6 +259,13 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
       const float gamma = subTriArea[0] * areaRecip;
 
       Colour c = ((c0 * alpha) + (c1 * beta) + (c2 * gamma));
+
+      float zVal = (v0p.z * alpha) +
+                   (v1p.z * beta) +
+                   (v2p.z * gamma);
+
+      if (!DepthFunc((int) x, (int) y, zVal))
+        continue;
 
       // Pixel is in triangle, so shade it
       ShadePixel((int)x, (int)y, c);

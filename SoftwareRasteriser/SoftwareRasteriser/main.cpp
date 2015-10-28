@@ -8,19 +8,20 @@ int main()
   SoftwareRasteriser r(800, 600);
   const float aspect = 800.0 / 600.0;
 
-  r.SetProjectionMatrix(Matrix4::Perspective(1.0, 100.0, aspect, 45.0));
+  r.SetProjectionMatrix(Matrix4::Perspective(1.0, 100.0, aspect, 45.0));
 
   RenderObject * o1 = new RenderObject();
   o1->mesh = Mesh::LoadMeshFile("C:\\Users\\dan-n\\git_repos\\NCL_CSC3223\\SoftwareRasteriser\\cube.asciimesh");
-  o1->modelMatrix = Matrix4::Translation(Vector3(2, 0, -5));
+  o1->modelMatrix = Matrix4::Translation(Vector3(1.5, 0.0, -5.0));
   
   RenderObject * o2 = new RenderObject();
   o2->mesh = Mesh::GenerateTriangle();
-  o2->modelMatrix = Matrix4::Translation(Vector3(2, 0, -25));
+  o2->modelMatrix = Matrix4::Translation(Vector3(2.0, 0.0, -25.0));
   
   RenderObject * o3 = new RenderObject();
   o3->mesh = Mesh::GenerateTriangle();
-  o3->modelMatrix = Matrix4::Translation(Vector3(2, 0, -50));
+  o3->modelMatrix = Matrix4::Translation(Vector3(2.0, 0.0, -50.0));
+
   Matrix4 viewMatrix;
   float yaw = 0.0f;
 

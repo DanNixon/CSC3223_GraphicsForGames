@@ -61,6 +61,15 @@ public:
     viewProjMatrix = projectionMatrix * viewMatrix;
   }
 
+  inline bool DepthFunc(int x, int y, float depthValue)
+  {
+    int index = (y * screenWidth) + x;
+    unsigned int castVal = (unsigned int) depthValue;
+    if (castVal > depthBuffer[index])
+      return false;
+    depthBuffer[index] = castVal;
+    return true;  }
+
 protected:
   Colour *GetCurrentBuffer();
 
