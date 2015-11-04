@@ -39,7 +39,7 @@ Mesh * Mesh::LoadMeshFile(const string & filename)
   m->textureCoords = new Vector2[m->numVertices];
   m->colours = new Colour[m->numVertices];
 
-  for (int i = 0; i < m->numVertices; ++i)
+  for (unsigned int i = 0; i < m->numVertices; ++i)
   {
     f >> m->vertices[i].x;
     f >> m->vertices[i].y;
@@ -48,12 +48,21 @@ Mesh * Mesh::LoadMeshFile(const string & filename)
 
   if (hasColour)
   {
-    for (int i = 0; i < m->numVertices; ++i)
+    for (unsigned int i = 0; i < m->numVertices; ++i)
     {
       f >> m->colours[i].r;
       f >> m->colours[i].g;
       f >> m->colours[i].b;
       f >> m->colours[i].a;
+    }
+  }
+
+  if (hasTex)
+  {
+    for (unsigned int i = 0; i < m->numVertices; ++i)
+    {
+      f >> m->textureCoords[i].x;
+      f >> m->textureCoords[i].y;
     }
   }
 
@@ -99,6 +108,7 @@ Mesh *Mesh::GenerateTriangle()
   m->numVertices = 3;
   m->vertices = new Vector4[m->numVertices];
   m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
 
   m->vertices[0] = Vector4(0.5f, -0.5f, 0.0f, 1.0f);
   m->vertices[1] = Vector4(0.0f, 0.5f, 0.0f, 1.0f);
@@ -107,6 +117,10 @@ Mesh *Mesh::GenerateTriangle()
   m->colours[0] = Colour(255, 0, 0, 255);
   m->colours[1] = Colour(0, 255, 0, 255);
   m->colours[2] = Colour(0, 0, 255, 255);
+
+  m->textureCoords[0] = Vector2(0.0f, 0.0f);
+  m->textureCoords[1] = Vector2(0.5f, 1.0f);
+  m->textureCoords[2] = Vector2(1.0f, 0.0f);
 
   return m;
 }

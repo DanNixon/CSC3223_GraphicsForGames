@@ -70,6 +70,23 @@ public:
     depthBuffer[index] = castVal;
     return true;  }
 
+  bool CohenSutherlandLine(Vector4 &inA, Vector4 &inB,
+	  Colour &colA, Colour &colB,
+	  Vector3 &texA, Vector3 &texB);
+
+  void SutherlandHodgmanTri(
+	  Vector4 &v0, Vector4 &v1, Vector4 &v2,
+	  const Colour &c0 = Colour(),
+	  const Colour &c1 = Colour(),
+	  const Colour &c2 = Colour(),
+	  const Vector2 &t0 = Vector2(),
+	  const Vector2 &t1 = Vector2(),
+	  const Vector2 &t2 = Vector2()
+	  );
+
+  float ClipEdge(const Vector4 &inA, const Vector4 &inB, int axis);
+  int HomogeniousOutcode(const Vector4 &in);
+
 protected:
   Colour *GetCurrentBuffer();
 
@@ -116,6 +133,7 @@ protected:
   }
 
   int currentDrawBuffer;
+  Texture * currentTexture;
 
   Colour *buffers[2];
 
