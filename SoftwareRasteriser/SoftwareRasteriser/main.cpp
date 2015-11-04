@@ -17,40 +17,40 @@ int main()
   RenderObject * o2 = new RenderObject();
   o2->mesh = Mesh::GenerateTriangle();
   o2->texture = Texture::TextureFromTGA("../brick.tga");
-  o2->modelMatrix = Matrix4::Translation(Vector3(2.0, 0.0, -5.0));
+  o2->modelMatrix = Matrix4::Translation(Vector3(0.0, 0.0, -5.0));
   
   RenderObject * o3 = new RenderObject();
   o3->mesh = Mesh::GenerateTriangle();
   o3->modelMatrix = Matrix4::Translation(Vector3(2.0, 0.0, -50.0));
 
-  Matrix4 viewMatrix;
-  float yaw = 0.0f;
-
   const float diff = 0.01f;
+  Matrix4 viewMatrix;
+  Vector3 camTranslate = Vector3(0, 0, -8);
 
   while (r.UpdateWindow())
   {
-    //yaw += Mouse::GetRelativePosition().x;
-    viewMatrix = viewMatrix * Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f));
-
     if (Keyboard::KeyDown(KEY_A))
-    {
       viewMatrix = viewMatrix * Matrix4::Translation(Vector3(-diff, 0.0f, 0.0f));
-    }
     if (Keyboard::KeyDown(KEY_D))
-    {
       viewMatrix = viewMatrix * Matrix4::Translation(Vector3(diff, 0.0f, 0.0f));
-    }
     if (Keyboard::KeyDown(KEY_W))
-    {
       viewMatrix = viewMatrix * Matrix4::Translation(Vector3(0.0f, -diff, 0.0f));
-    }
     if (Keyboard::KeyDown(KEY_S))
-    {
       viewMatrix = viewMatrix * Matrix4::Translation(Vector3(0.0f, diff, 0.0f));
+
+    if (Keyboard::KeyDown(KEY_UP))
+      camTranslate.z += diff;
+    if (Keyboard::KeyDown(KEY_DOWN))
+      camTranslate.z -= diff;
+
+    if (Keyboard::KeyTriggered(KEY_F))
+    {
+      r.SwitchTextureFiltering();
+      std::cout << r.GetTextureSampleState() << std::endl;
     }
 
-    r.SetViewMatrix(viewMatrix);
+    //r.SetViewMatrix(viewMatrix);
+    r.SetViewMatrix(Matrix4::Translation(camTranslate));
 
     r.ClearBuffers();
 

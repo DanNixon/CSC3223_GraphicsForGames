@@ -41,6 +41,7 @@ public:
   static Texture *TextureFromTGA(const string &filename);
 
   const Colour &NearestTexSample(const Vector3 &coords, int miplevel = 0);
+  const Colour &BilinearTexSample(const Vector3 &coords, int miplevel = 0);
 
   const Colour &ColourAtPoint(int x, int y, int mipLevel = 0)
   {
@@ -65,6 +66,11 @@ public:
   }
 
 protected:
+  void CreateMipMaps();
+  void GenerateMipLevel(Colour *source, Colour *dest, int mipLevel);
+
+  vector<Colour *> mipLevels;
+
   uint width;
   uint height;
 

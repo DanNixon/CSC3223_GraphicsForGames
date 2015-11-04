@@ -27,6 +27,14 @@ _-_-_-_-_-_-_-""  ""
 
 using std::vector;
 
+enum SampleState
+{
+  SAMPLE_NEAREST,
+  SAMPLE_BILINEAR,
+  SAMPLE_MIPMAP_NEAREST,
+  SAMPLE_MIPMAP_BILINEAR
+};
+
 struct BoundingBox
 {
   Vector2 topLeft;
@@ -70,6 +78,29 @@ public:
     depthBuffer[index] = castVal;
     return true;  }
 
+  void SwitchTextureFiltering()
+  {
+    switch (texSampleState)
+    {
+    case SAMPLE_NEAREST:
+      texSampleState = SAMPLE_BILINEAR;
+      break;
+    case SAMPLE_BILINEAR:
+      texSampleState = SAMPLE_MIPMAP_NEAREST;
+      break;
+    case SAMPLE_MIPMAP_NEAREST:
+      texSampleState = SAMPLE_MIPMAP_BILINEAR;
+      break;
+    default:
+      texSampleState = SAMPLE_NEAREST;
+    }
+  }
+
+  SampleState GetTextureSampleState()
+  {
+    return texSampleState;
+  }
+
   bool CohenSutherlandLine(Vector4 &inA, Vector4 &inB,
 	  Colour &colA, Colour &colB,
 	  Vector3 &texA, Vector3 &texB);
@@ -89,6 +120,10 @@ public:
 
 protected:
   Colour *GetCurrentBuffer();
+
+  void CalculateWeights(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
+                        const Vector4 &p,
+                        float &alpha, float &beta, float &gamma);
 
   void RasterisePointsMesh(RenderObject *o);
   void RasteriseLinesMesh(RenderObject *o);
@@ -146,4 +181,6 @@ protected:
   Matrix4 viewProjMatrix;
 
   Matrix4 portMatrix;
+
+  SampleState texSampleState;
 };

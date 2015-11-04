@@ -53,6 +53,7 @@ SoftwareRasteriser::SoftwareRasteriser(uint width, uint height)
 {
   currentDrawBuffer = 0;
   currentTexture = NULL;
+  texSampleState = SAMPLE_NEAREST;
 
 #ifndef USE_OS_BUFFERS
   // Hi! In the tutorials, it's mentioned that we need to form our front + back buffer like so:
@@ -160,6 +161,23 @@ void SoftwareRasteriser::DrawObject(RenderObject *o)
     RasteriseTriMesh(o);
     break;
   }
+}
+
+void SoftwareRasteriser::CalculateWeights(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
+  const Vector4 &p,
+  float &alpha, float &beta, float &gamma)
+{
+  const float triArea = ScreenAreaOfTri(v0, v1, v2);
+  const float areaRecip = 1.0f / triArea;
+  
+  float subTriArea[3];
+  subTriArea[0] = abs(ScreenAreaOfTri(v0, p, v1));
+  subTriArea[1] = abs(ScreenAreaOfTri(v1, p, v2));
+  subTriArea[2] = abs(ScreenAreaOfTri(v2, p, v0));
+
+  alpha = subTriArea[1] * areaRecip;
+  beta = subTriArea[2] * areaRecip;
+  gamma = subTriArea[0] * areaRecip;
 }
 
 bool SoftwareRasteriser::CohenSutherlandLine(Vector4 &inA, Vector4 &inB,
@@ -379,7 +397,42 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
         Vector3 subTex = (t0 * alpha) + (t1 * beta) + (t2 * gamma);
         subTex.x /= subTex.z;
         subTex.y /= subTex.z;
-        ShadePixel((int)x, (int)y, currentTexture->NearestTexSample(subTex));
+
+        switch (texSampleState)
+        {
+        case SAMPLE_BILINEAR:
+          ShadePixel((int)x, (int)y, currentTexture->BilinearTexSample(subTex));
+          break;
+        case SAMPLE_MIPMAP_NEAREST:
+        {
+          float xAlpha, xBeta, xGamma, yAlpha, yBeta, yGamma;
+          
+          CalculateWeights(v0p, v1p, v2p, screenPos + Vector4(1, 0, 0, 0), xAlpha, xBeta, xGamma);
+          CalculateWeights(v0p, v1p, v2p, screenPos + Vector4(0, 1, 0, 0), yAlpha, yBeta, yGamma);
+          
+          Vector3 xDerivs = (t0 * xAlpha) + (t1 * xBeta) + (t2 * xGamma);
+          Vector3 yDerivs = (t0 * yAlpha) + (t1 * yBeta) + (t2 * yGamma);
+          
+          xDerivs.x /= xDerivs.z;
+          xDerivs.y /= xDerivs.z;
+
+          yDerivs.x /= yDerivs.z;
+          yDerivs.y /= yDerivs.z;
+          
+          xDerivs = xDerivs - subTex;
+          yDerivs = yDerivs - subTex;
+
+          const float maxU = max(abs(xDerivs.x), abs(yDerivs.y));
+          const float maxV = max(abs(xDerivs.y), abs(yDerivs.y));
+          const float maxChange = abs(max(maxU, maxV));
+          const int lambda = abs(log(maxChange) / log(2.0));
+
+          ShadePixel((int)x, (int)y, currentTexture->NearestTexSample(subTex, lambda));
+          break;
+        }
+        default:
+          ShadePixel((int)x, (int)y, currentTexture->NearestTexSample(subTex));
+        }
       }
       else
       {

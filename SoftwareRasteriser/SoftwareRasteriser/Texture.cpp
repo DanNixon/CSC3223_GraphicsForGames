@@ -6,6 +6,8 @@ Texture::Texture(void)
   height = 0;
 
   texels = NULL;
+
+  CreateMipMaps();
 }
 
 Texture::~Texture(void)
@@ -47,8 +49,87 @@ Texture *Texture::TextureFromTGA(const string &filename)
 
 const Colour &Texture::NearestTexSample(const Vector3 &coords, int miplevel)
 {
-  int x = (int)(coords.x * (width - 1));
-  int y = (int)(coords.y * (width - 1));
+  miplevel = min(miplevel, mipLevels.size() -1);
+  miplevel = (mipLevels.size() - 1) - miplevel;
 
-  return ColourAtPoint(x, y);
+  const int texWidth = width >> miplevel;
+  const int texHeight = height >> miplevel;
+
+  int x = (int)(coords.x * (texWidth - 1));
+  int y = (int)(coords.y * (texHeight - 1));
+
+  return ColourAtPoint(x, y, miplevel);
+}
+
+const Colour &Texture::BilinearTexSample(const Vector3 &coords, int miplevel)
+{
+  const int texWidth = width;
+  const int texHeight = height;
+
+  const int x = (int)(coords.x * texWidth);
+  const int y = (int)(coords.y * texHeight);
+
+  const Colour &tl = ColourAtPoint(x, y);
+  const Colour &tr = ColourAtPoint(x+1, y);
+  const Colour &bl = ColourAtPoint(x, y+1);
+  const Colour &br = ColourAtPoint(x+1, y+1);
+
+  const float fracX = (coords.x * texWidth) - x;
+  const float fracY = (coords.y * texHeight) - y;
+
+  Colour top = Colour::Lerp(tl, tr, fracX);
+  Colour bottom = Colour::Lerp(bl, br, fracX);
+
+  return Colour::Lerp(top, bottom, fracY);
+}
+
+void Texture::CreateMipMaps()
+{
+  int tempWidth = width;
+  int tempHeight = height;
+
+  mipLevels.push_back(texels);
+
+  int numLevels = 0;
+  while (tempWidth > 1 && tempHeight > 1)
+  {
+    // Half existing values
+    tempWidth = tempWidth >> 1;
+    tempHeight = tempHeight >> 1;
+
+    Colour * newLevel = new Colour[tempWidth * tempHeight];
+    GenerateMipLevel(mipLevels.back(), newLevel, numLevels);
+
+    numLevels++;
+    mipLevels.push_back(newLevel);
+  }
+}
+
+void Texture::GenerateMipLevel(Colour *source, Colour *dest, int mipLevel)
+{
+  int sourceWidth = width >> mipLevel;
+  int sourceHeight = height >> mipLevel;
+
+  int destWidth = width >> (mipLevel + 1);
+  int destHeight = height >> (mipLevel + 1);
+
+  int outY = 0;
+
+  for (int y = 0; y < sourceHeight; y += 2)
+  {
+    int outX = 0;
+    for (int x = 0; x < sourceWidth; x += 2)
+    {
+      Colour out;
+
+      out += source[(y * sourceHeight) + x] * 0.25f;
+      out += source[(y * sourceHeight) + x+1] * 0.25f;
+      out += source[((y+1) * sourceHeight) + x] * 0.25f;
+      out += source[((y+1) * sourceHeight) + x+1] * 0.25f;
+
+      dest[outY * destHeight + outX] = out;
+      outX++;
+    }
+    outY++;
+  }
 }
