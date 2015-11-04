@@ -66,66 +66,66 @@ public:
 
   void SetViewMatrix(const Matrix4 &m)
   {
-    viewMatrix = m;
-    viewProjMatrix = projectionMatrix * viewMatrix;
+    m_viewMatrix = m;
+    m_viewProjMatrix = m_projectionMatrix * m_viewMatrix;
   }
 
   void SetProjectionMatrix(const Matrix4 &m)
   {
-    projectionMatrix = m;
-    viewProjMatrix = projectionMatrix * viewMatrix;
+    m_projectionMatrix = m;
+    m_viewProjMatrix = m_projectionMatrix * m_viewMatrix;
   }
 
   inline bool DepthFunc(int x, int y, float depthValue)
   {
     int index = (y * screenWidth) + x;
     unsigned int castVal = (unsigned int) depthValue;
-    if (castVal > depthBuffer[index])
+    if (castVal > m_depthBuffer[index])
       return false;
-    depthBuffer[index] = castVal;
+    m_depthBuffer[index] = castVal;
     return true;  }
 
   void SwitchTextureFiltering()
   {
-    switch (texSampleState)
+    switch (m_texSampleState)
     {
     case SAMPLE_NEAREST:
-      texSampleState = SAMPLE_BILINEAR;
+      m_texSampleState = SAMPLE_BILINEAR;
       break;
     case SAMPLE_BILINEAR:
-      texSampleState = SAMPLE_MIPMAP_NEAREST;
+      m_texSampleState = SAMPLE_MIPMAP_NEAREST;
       break;
     case SAMPLE_MIPMAP_NEAREST:
-      texSampleState = SAMPLE_MIPMAP_BILINEAR;
+      m_texSampleState = SAMPLE_MIPMAP_BILINEAR;
       break;
     default:
-      texSampleState = SAMPLE_NEAREST;
+      m_texSampleState = SAMPLE_NEAREST;
     }
   }
 
   SampleState GetTextureSampleState()
   {
-    return texSampleState;
+    return m_texSampleState;
   }
 
   void SwitchBlendState()
   {
-    switch (blendState)
+    switch (m_blendState)
     {
     case BLEND_REPLACE:
-      blendState = BLEND_ALPHA;
+      m_blendState = BLEND_ALPHA;
       break;
     case BLEND_ALPHA:
-      blendState = BLEND_ADDITIVE;
+      m_blendState = BLEND_ADDITIVE;
       break;
     default:
-      blendState = BLEND_REPLACE;
+      m_blendState = BLEND_REPLACE;
     }
   }
 
   BlendState GetBlendState()
   {
-    return blendState;
+    return m_blendState;
   }
 
   bool CohenSutherlandLine(Vector4 &inA, Vector4 &inB,
@@ -186,7 +186,7 @@ protected:
       return;
 
     const int index = (y * screenWidth) + x;
-    buffers[currentDrawBuffer][index] = c;
+    m_buffers[m_currentDrawBuffer][index] = c;
   }
 
   inline void BlendPixel(uint x, uint y, const Colour &c)
@@ -197,9 +197,9 @@ protected:
       return;
 
     const int index = (y * screenWidth) + x;
-    Colour &dest = buffers[currentDrawBuffer][index];
+    Colour &dest = m_buffers[m_currentDrawBuffer][index];
 
-    switch (blendState)
+    switch (m_blendState)
     {
     case BLEND_ALPHA:
     {
@@ -219,21 +219,19 @@ protected:
     }
   }
 
-  int currentDrawBuffer;
-  Texture * currentTexture;
+  int m_currentDrawBuffer;
+  Texture * m_currentTexture;
 
-  Colour *buffers[2];
+  Colour *m_buffers[2];
+  unsigned short *m_depthBuffer;
 
-  unsigned short *depthBuffer;
+  Matrix4 m_viewMatrix;
+  Matrix4 m_projectionMatrix;
+  Matrix4 m_textureMatrix;
 
-  Matrix4 viewMatrix;
-  Matrix4 projectionMatrix;
-  Matrix4 textureMatrix;
+  Matrix4 m_viewProjMatrix;
+  Matrix4 m_portMatrix;
 
-  Matrix4 viewProjMatrix;
-
-  Matrix4 portMatrix;
-
-  SampleState texSampleState;
-  BlendState blendState;
+  SampleState m_texSampleState;
+  BlendState m_blendState;
 };

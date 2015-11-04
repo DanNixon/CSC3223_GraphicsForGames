@@ -51,16 +51,16 @@ float SoftwareRasteriser::ScreenAreaOfTri(const Vector4 &v0, const Vector4 &v1, 
 SoftwareRasteriser::SoftwareRasteriser(uint width, uint height)
     : Window(width, height)
 {
-  currentDrawBuffer = 0;
-  currentTexture = NULL;
-  texSampleState = SAMPLE_NEAREST;
-  blendState = BLEND_REPLACE;
+  m_currentDrawBuffer = 0;
+  m_currentTexture = NULL;
+  m_texSampleState = SAMPLE_NEAREST;
+  m_blendState = BLEND_REPLACE;
 
 #ifndef USE_OS_BUFFERS
   // Hi! In the tutorials, it's mentioned that we need to form our front + back buffer like so:
   for (int i = 0; i < 2; ++i)
   {
-    buffers[i] = new Colour[screenWidth * screenHeight];
+    m_buffers[i] = new Colour[screenWidth * screenHeight];
   }
 #else
   // This works, but we can actually save a memcopy by rendering directly into the memory the
@@ -71,13 +71,13 @@ SoftwareRasteriser::SoftwareRasteriser(uint width, uint height)
   }
 #endif
 
-  depthBuffer = new unsigned short[screenWidth * screenHeight];
+  m_depthBuffer = new unsigned short[screenWidth * screenHeight];
 
   float zScale = (pow(2.0f, 16) - 1) * 0.5f;
 
   Vector3 halfScreen = Vector3((screenWidth - 1) * 0.5f, (screenHeight - 1) * 0.5f, zScale);
 
-  portMatrix = Matrix4::Translation(halfScreen) * Matrix4::Scale(halfScreen);
+  m_portMatrix = Matrix4::Translation(halfScreen) * Matrix4::Scale(halfScreen);
 }
 
 SoftwareRasteriser::~SoftwareRasteriser(void)
@@ -85,10 +85,10 @@ SoftwareRasteriser::~SoftwareRasteriser(void)
 #ifndef USE_OS_BUFFERS
   for (int i = 0; i < 2; ++i)
   {
-    delete[] buffers[i];
+    delete[] m_buffers[i];
   }
 #endif
-  delete[] depthBuffer;
+  delete[] m_depthBuffer;
 }
 
 void SoftwareRasteriser::Resize()
@@ -98,8 +98,8 @@ void SoftwareRasteriser::Resize()
 #ifndef USE_OS_BUFFERS
   for (int i = 0; i < 2; ++i)
   {
-    delete[] buffers[i];
-    buffers[i] = new Colour[screenWidth * screenHeight];
+    delete[] m_buffers[i];
+    m_buffers[i] = new Colour[screenWidth * screenHeight];
   }
 #else
   for (int i = 0; i < 2; ++i)
@@ -108,19 +108,19 @@ void SoftwareRasteriser::Resize()
   }
 #endif
 
-  delete[] depthBuffer;
-  depthBuffer = new unsigned short[screenWidth * screenHeight];
+  delete[] m_depthBuffer;
+  m_depthBuffer = new unsigned short[screenWidth * screenHeight];
 
   float zScale = (pow(2.0f, 16) - 1) * 0.5f;
 
   Vector3 halfScreen = Vector3((screenWidth - 1) * 0.5f, (screenHeight - 1) * 0.5f, zScale);
 
-  portMatrix = Matrix4::Translation(halfScreen) * Matrix4::Scale(halfScreen);
+  m_portMatrix = Matrix4::Translation(halfScreen) * Matrix4::Scale(halfScreen);
 }
 
 Colour *SoftwareRasteriser::GetCurrentBuffer()
 {
-  return buffers[currentDrawBuffer];
+  return m_buffers[m_currentDrawBuffer];
 }
 
 void SoftwareRasteriser::ClearBuffers()
@@ -135,20 +135,20 @@ void SoftwareRasteriser::ClearBuffers()
     for (uint x = 0; x < screenWidth; ++x)
     {
       buffer[(y * screenWidth) + x].c = clearVal;
-      depthBuffer[(y * screenWidth) + x] = depthVal;
+      m_depthBuffer[(y * screenWidth) + x] = depthVal;
     }
   }
 }
 
 void SoftwareRasteriser::SwapBuffers()
 {
-  PresentBuffer(buffers[currentDrawBuffer]);
-  currentDrawBuffer = !currentDrawBuffer;
+  PresentBuffer(m_buffers[m_currentDrawBuffer]);
+  m_currentDrawBuffer = !m_currentDrawBuffer;
 }
 
 void SoftwareRasteriser::DrawObject(RenderObject *o)
 {
-  currentTexture = o->GetTexure();
+  m_currentTexture = o->GetTexure();
 
   switch (o->GetMesh()->GetType())
   {
@@ -281,8 +281,8 @@ int SoftwareRasteriser::HomogeniousOutcode(const Vector4 &in)
 void SoftwareRasteriser::RasteriseLine(const Vector4 &v0, const Vector4 &v1, const Colour &colA,
                                        const Colour &colB, const Vector2 &texA, const Vector2 &texB)
 {
-  Vector4 v0p = portMatrix * v0;
-  Vector4 v1p = portMatrix * v1;
+  Vector4 v0p = m_portMatrix * v0;
+  Vector4 v1p = m_portMatrix * v1;
   Vector4 dir = v1p - v0p;
 
   int xDir = (dir.x < 0.0f) ? -1 : 1;
@@ -349,9 +349,9 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
                                       const Colour &c0, const Colour &c1, const Colour &c2,
                                       const Vector3 &t0, const Vector3 &t1, const Vector3 &t2)
 {
-  Vector4 v0p = portMatrix * v0;
-  Vector4 v1p = portMatrix * v1;
-  Vector4 v2p = portMatrix * v2;
+  Vector4 v0p = m_portMatrix * v0;
+  Vector4 v1p = m_portMatrix * v1;
+  Vector4 v2p = m_portMatrix * v2;
 
   const BoundingBox b = CalculateBoxForTri(v0p, v1p, v2p);
   const float triArea = ScreenAreaOfTri(v0p, v1p, v2p);
@@ -393,16 +393,16 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
         continue;
 
       // Pixel is in triangle, so shade it
-      if (currentTexture)
+      if (m_currentTexture)
       {
         Vector3 subTex = (t0 * alpha) + (t1 * beta) + (t2 * gamma);
         subTex.x /= subTex.z;
         subTex.y /= subTex.z;
 
-        switch (texSampleState)
+        switch (m_texSampleState)
         {
         case SAMPLE_BILINEAR:
-          BlendPixel((int)x, (int)y, currentTexture->BilinearTexSample(subTex));
+          BlendPixel((int)x, (int)y, m_currentTexture->BilinearTexSample(subTex));
           break;
         case SAMPLE_MIPMAP_NEAREST:
         {
@@ -428,11 +428,11 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
           const float maxChange = abs(max(maxU, maxV));
           const int lambda = abs(log(maxChange) / log(2.0));
 
-          BlendPixel((int)x, (int)y, currentTexture->NearestTexSample(subTex, lambda));
+          BlendPixel((int)x, (int)y, m_currentTexture->NearestTexSample(subTex, lambda));
           break;
         }
         default:
-          BlendPixel((int)x, (int)y, currentTexture->NearestTexSample(subTex));
+          BlendPixel((int)x, (int)y, m_currentTexture->NearestTexSample(subTex));
         }
       }
       else
@@ -448,9 +448,9 @@ void SoftwareRasteriser::RasteriseTriSpans(const Vector4 &v0, const Vector4 &v1,
                                            const Colour &c0, const Colour &c1, const Colour &c2,
                                            const Vector3 &t0, const Vector3 &t1, const Vector3 &t2)
 {
-  Vector4 v0p = portMatrix * v0;
-  Vector4 v1p = portMatrix * v1;
-  Vector4 v2p = portMatrix * v2;
+  Vector4 v0p = m_portMatrix * v0;
+  Vector4 v1p = m_portMatrix * v1;
+  Vector4 v2p = m_portMatrix * v2;
 
   float edge0y = abs(v0p.y - v1p.y);
   float edge1y = abs(v1p.y - v2p.y);
@@ -524,19 +524,19 @@ void SoftwareRasteriser::RasteriseTriEdgeSpans(const Vector4 &v0, const Vector4 
 
 void SoftwareRasteriser::RasterisePointsMesh(RenderObject *o)
 {
-  Matrix4 mvp = viewProjMatrix * o->GetModelMatrix();
+  Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
   for (uint i = 0; i < o->GetMesh()->numVertices; i++)
   {
     Vector4 vertexPos = mvp * o->GetMesh()->vertices[i];
     vertexPos.SelfDivisionByW();
-    Vector4 screenPos = portMatrix * vertexPos;
+    Vector4 screenPos = m_portMatrix * vertexPos;
     BlendPixel((uint)screenPos.x, (uint)screenPos.y, Colour::White);
   }
 }
 
 void SoftwareRasteriser::RasteriseLinesMesh(RenderObject *o)
 {
-  Matrix4 mvp = viewProjMatrix * o->GetModelMatrix();
+  Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
   for (uint i = 0; i < o->GetMesh()->numVertices; i += 2)
   {
     Vector4 v0 = mvp * o->GetMesh()->vertices[i];
@@ -557,7 +557,7 @@ void SoftwareRasteriser::RasteriseLinesMesh(RenderObject *o)
 
 void SoftwareRasteriser::RasteriseTriMesh(RenderObject *o)
 {
-  Matrix4 mvp = viewProjMatrix * o->GetModelMatrix();
+  Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
 
   for (uint i = 0; i < o->GetMesh()->numVertices; i += 3)
   {
