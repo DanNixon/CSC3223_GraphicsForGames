@@ -114,9 +114,9 @@ Mesh *Mesh::GenerateTriangle()
   m->vertices[1] = Vector4(0.0f, 0.5f, 0.0f, 1.0f);
   m->vertices[2] = Vector4(-0.5f, -0.5f, 0.0f, 1.0f);
 
-  m->colours[0] = Colour(255, 0, 0, 255);
-  m->colours[1] = Colour(0, 255, 0, 255);
-  m->colours[2] = Colour(0, 0, 255, 255);
+  m->colours[0] = Colour(255, 0, 0, 127);
+  m->colours[1] = Colour(0, 255, 0, 127);
+  m->colours[2] = Colour(0, 0, 255, 127);
 
   m->textureCoords[0] = Vector2(0.0f, 0.0f);
   m->textureCoords[1] = Vector2(0.5f, 1.0f);

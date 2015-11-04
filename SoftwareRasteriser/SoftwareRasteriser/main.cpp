@@ -16,16 +16,16 @@ int main()
   
   RenderObject * o2 = new RenderObject();
   o2->mesh = Mesh::GenerateTriangle();
-  o2->texture = Texture::TextureFromTGA("../brick.tga");
+  //o2->texture = Texture::TextureFromTGA("../brick.tga");
   o2->modelMatrix = Matrix4::Translation(Vector3(0.0, 0.0, -5.0));
   
   RenderObject * o3 = new RenderObject();
   o3->mesh = Mesh::GenerateTriangle();
-  o3->modelMatrix = Matrix4::Translation(Vector3(2.0, 0.0, -50.0));
+  o3->modelMatrix = Matrix4::Translation(Vector3(2.0, 0.0, -10.0));
 
   const float diff = 0.01f;
   Matrix4 viewMatrix;
-  Vector3 camTranslate = Vector3(0, 0, -8);
+  Vector3 camTranslate = Vector3(0, 0, 0);
 
   while (r.UpdateWindow())
   {
@@ -49,14 +49,20 @@ int main()
       std::cout << r.GetTextureSampleState() << std::endl;
     }
 
-    //r.SetViewMatrix(viewMatrix);
-    r.SetViewMatrix(Matrix4::Translation(camTranslate));
+    if (Keyboard::KeyTriggered(KEY_E))
+    {
+      r.SwitchBlendState();
+      std::cout << r.GetBlendState() << std::endl;
+    }
+
+    r.SetViewMatrix(viewMatrix);
+    //r.SetViewMatrix(Matrix4::Translation(camTranslate));
 
     r.ClearBuffers();
 
     //r.DrawObject(o1);
-    r.DrawObject(o2);
     r.DrawObject(o3);
+    r.DrawObject(o2);
 
     r.SwapBuffers();
   }

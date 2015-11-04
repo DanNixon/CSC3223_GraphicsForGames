@@ -27,6 +27,13 @@ _-_-_-_-_-_-_-""  ""
 
 using std::vector;
 
+enum BlendState
+{
+  BLEND_REPLACE,
+  BLEND_ALPHA,
+  BLEND_ADDITIVE
+};
+
 enum SampleState
 {
   SAMPLE_NEAREST,
@@ -101,6 +108,26 @@ public:
     return texSampleState;
   }
 
+  void SwitchBlendState()
+  {
+    switch (blendState)
+    {
+    case BLEND_REPLACE:
+      blendState = BLEND_ALPHA;
+      break;
+    case BLEND_ALPHA:
+      blendState = BLEND_ADDITIVE;
+      break;
+    default:
+      blendState = BLEND_REPLACE;
+    }
+  }
+
+  BlendState GetBlendState()
+  {
+    return blendState;
+  }
+
   bool CohenSutherlandLine(Vector4 &inA, Vector4 &inB,
 	  Colour &colA, Colour &colB,
 	  Vector3 &texA, Vector3 &texB);
@@ -154,17 +181,42 @@ protected:
   inline void ShadePixel(uint x, uint y, const Colour &c)
   {
     if (y >= screenHeight)
-    {
       return;
-    }
     if (x >= screenWidth)
-    {
       return;
-    }
 
-    int index = (y * screenWidth) + x;
-
+    const int index = (y * screenWidth) + x;
     buffers[currentDrawBuffer][index] = c;
+  }
+
+  inline void BlendPixel(uint x, uint y, const Colour &c)
+  {
+    if (y >= screenHeight)
+      return;
+    if (x >= screenWidth)
+      return;
+
+    const int index = (y * screenWidth) + x;
+    Colour &dest = buffers[currentDrawBuffer][index];
+
+    switch (blendState)
+    {
+    case BLEND_ALPHA:
+    {
+      const unsigned char sFactor = c.a;
+      const unsigned char dFactor = (255 - c.a);
+      dest.r = ((c.r * sFactor) + (dest.r * dFactor)) / 255;
+      dest.g = ((c.g * sFactor) + (dest.g * dFactor)) / 255;
+      dest.b = ((c.b * sFactor) + (dest.b * dFactor)) / 255;
+      dest.a = ((c.a * sFactor) + (dest.a * dFactor)) / 255;
+      break;
+    }
+    case BLEND_ADDITIVE:
+      dest = dest + c;
+      break;
+    default:
+      dest = c;
+    }
   }
 
   int currentDrawBuffer;
@@ -183,4 +235,5 @@ protected:
   Matrix4 portMatrix;
 
   SampleState texSampleState;
+  BlendState blendState;
 };

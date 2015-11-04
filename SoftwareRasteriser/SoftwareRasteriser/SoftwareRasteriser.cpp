@@ -54,6 +54,7 @@ SoftwareRasteriser::SoftwareRasteriser(uint width, uint height)
   currentDrawBuffer = 0;
   currentTexture = NULL;
   texSampleState = SAMPLE_NEAREST;
+  blendState = BLEND_REPLACE;
 
 #ifndef USE_OS_BUFFERS
   // Hi! In the tutorials, it's mentioned that we need to form our front + back buffer like so:
@@ -401,7 +402,7 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
         switch (texSampleState)
         {
         case SAMPLE_BILINEAR:
-          ShadePixel((int)x, (int)y, currentTexture->BilinearTexSample(subTex));
+          BlendPixel((int)x, (int)y, currentTexture->BilinearTexSample(subTex));
           break;
         case SAMPLE_MIPMAP_NEAREST:
         {
@@ -427,17 +428,17 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
           const float maxChange = abs(max(maxU, maxV));
           const int lambda = abs(log(maxChange) / log(2.0));
 
-          ShadePixel((int)x, (int)y, currentTexture->NearestTexSample(subTex, lambda));
+          BlendPixel((int)x, (int)y, currentTexture->NearestTexSample(subTex, lambda));
           break;
         }
         default:
-          ShadePixel((int)x, (int)y, currentTexture->NearestTexSample(subTex));
+          BlendPixel((int)x, (int)y, currentTexture->NearestTexSample(subTex));
         }
       }
       else
       {
         Colour c = ((c0 * alpha) + (c1 * beta) + (c2 * gamma));
-        ShadePixel((int)x, (int)y, c);
+        BlendPixel((int)x, (int)y, c);
       }
     }
   }
@@ -513,7 +514,7 @@ void SoftwareRasteriser::RasteriseTriEdgeSpans(const Vector4 &v0, const Vector4 
 
     for (float x = minX; x < maxX; ++x)
     {
-      ShadePixel((int)x, (int)y, Colour::White);
+      BlendPixel((int)x, (int)y, Colour::White);
     }
 
     start.x += longStep;
@@ -529,7 +530,7 @@ void SoftwareRasteriser::RasterisePointsMesh(RenderObject *o)
     Vector4 vertexPos = mvp * o->GetMesh()->vertices[i];
     vertexPos.SelfDivisionByW();
     Vector4 screenPos = portMatrix * vertexPos;
-    ShadePixel((uint)screenPos.x, (uint)screenPos.y, Colour::White);
+    BlendPixel((uint)screenPos.x, (uint)screenPos.y, Colour::White);
   }
 }
 
