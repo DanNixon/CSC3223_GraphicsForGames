@@ -60,7 +60,7 @@ int main()
 
     r.ClearBuffers();
 
-    //r.DrawObject(o1);
+    r.DrawObject(o1);
     r.DrawObject(o3);
     r.DrawObject(o2);
 
