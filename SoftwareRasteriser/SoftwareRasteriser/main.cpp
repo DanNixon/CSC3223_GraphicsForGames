@@ -10,18 +10,24 @@ int main()
 
   r.SetProjectionMatrix(Matrix4::Perspective(1.0, 100.0, aspect, 45.0));
 
+  Mesh * testTri = Mesh::GenerateTriangle();
+    
   RenderObject * o1 = new RenderObject();
-  o1->mesh = Mesh::LoadMeshFile("../cube.asciimesh");
-  o1->modelMatrix = Matrix4::Translation(Vector3(1.5, 0.0, -5.0));
-  
   RenderObject * o2 = new RenderObject();
-  o2->mesh = Mesh::GenerateTriangle();
-  //o2->texture = Texture::TextureFromTGA("../brick.tga");
-  o2->modelMatrix = Matrix4::Translation(Vector3(0.0, 0.0, -5.0));
-  
   RenderObject * o3 = new RenderObject();
-  o3->mesh = Mesh::GenerateTriangle();
-  o3->modelMatrix = Matrix4::Translation(Vector3(2.0, 0.0, -10.0));
+  RenderObject * o4 = new RenderObject();
+  
+  o1->mesh = testTri;
+  o2->mesh = testTri;
+  o3->mesh = testTri;
+  o4->mesh = testTri;
+  
+  o1->modelMatrix = Matrix4::Rotation(180.0f, Vector3(0, 1, 0));
+  o2->modelMatrix = Matrix4::Translation(Vector3(-0.6, 0.6, -2));
+  o3->modelMatrix = Matrix4::Translation(Vector3(0.6, -0.6, -2));
+  o4->modelMatrix = Matrix4::Translation(Vector3(0.6, 0.6, -2));
+
+  o2->texture = Texture::TextureFromTGA("../brick.tga");
 
   const float diff = 0.01f;
   Matrix4 viewMatrix;
@@ -55,14 +61,15 @@ int main()
       std::cout << r.GetBlendState() << std::endl;
     }
 
-    r.SetViewMatrix(viewMatrix);
-    //r.SetViewMatrix(Matrix4::Translation(camTranslate));
+    //r.SetViewMatrix(viewMatrix);
+    r.SetViewMatrix(Matrix4::Translation(camTranslate));
 
     r.ClearBuffers();
 
     r.DrawObject(o1);
-    r.DrawObject(o3);
     r.DrawObject(o2);
+    r.DrawObject(o3);
+    r.DrawObject(o4);
 
     r.SwapBuffers();
   }

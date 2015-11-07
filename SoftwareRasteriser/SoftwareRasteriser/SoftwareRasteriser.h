@@ -143,7 +143,7 @@ public:
 	  );
 
   float ClipEdge(const Vector4 &inA, const Vector4 &inB, int axis);
-  int HomogeniousOutcode(const Vector4 &in);
+  int HomogeneousOutcode(const Vector4 &in);
 
 protected:
   Colour *GetCurrentBuffer();
@@ -163,7 +163,7 @@ protected:
   void RasteriseLine(const Vector4 &v0, const Vector4 &v1,
                      const Colour &colA = Colour(255, 255, 255, 255),
                      const Colour &colB = Colour(255, 255, 255, 255),
-                     const Vector2 &texA = Vector2(0, 0), const Vector2 &texB = Vector2(1, 1));
+                     const Vector3 &texA = Vector3(0, 0, 0), const Vector3 &texB = Vector3(1, 1, 1));
 
   void RasteriseTri(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
                     const Colour &c0 = Colour(), const Colour &c1 = Colour(),
