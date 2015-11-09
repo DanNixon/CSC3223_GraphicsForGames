@@ -49,14 +49,14 @@ Texture *Texture::TextureFromTGA(const string &filename)
 
 const Colour &Texture::NearestTexSample(const Vector3 &coords, int miplevel)
 {
-  miplevel = min(miplevel, mipLevels.size() -1);
+  miplevel = min(miplevel, mipLevels.size() - 1);
   miplevel = (mipLevels.size() - 1) - miplevel;
 
   const int texWidth = width >> miplevel;
   const int texHeight = height >> miplevel;
 
-  int x = (int)(coords.x * (texWidth - 1));
-  int y = (int)(coords.y * (texHeight - 1));
+  int x = (int) (coords.x * (texWidth - 1));
+  int y = (int) (coords.y * (texHeight - 1));
 
   return ColourAtPoint(x, y, miplevel);
 }
@@ -66,8 +66,8 @@ const Colour &Texture::BilinearTexSample(const Vector3 &coords, int miplevel)
   const int texWidth = width;
   const int texHeight = height;
 
-  const int x = (int)(coords.x * texWidth);
-  const int y = (int)(coords.y * texHeight);
+  const int x = (int) (coords.x * texWidth);
+  const int y = (int) (coords.y * texHeight);
 
   const Colour &tl = ColourAtPoint(x, y);
   const Colour &tr = ColourAtPoint(x+1, y);

@@ -8,4 +8,9 @@ RenderObject::RenderObject(void)
 
 RenderObject::~RenderObject(void)
 {
+  if (texture != NULL)
+    delete texture;
+
+  if (mesh != NULL)
+    delete mesh;
 }

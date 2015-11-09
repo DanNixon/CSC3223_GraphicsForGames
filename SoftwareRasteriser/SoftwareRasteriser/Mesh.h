@@ -58,5 +58,5 @@ protected:
 
   Vector4 *vertices;
   Colour *colours;
-  Vector2 *textureCoords; // We get onto what to do with these later on...
+  Vector2 *textureCoords;
 };

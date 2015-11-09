@@ -3,50 +3,41 @@
 #include "Mesh.h"
 #include "Texture.h"
 
+void generateRandomStarfield(vector<RenderObject *> &out, const int num = 100, const float xyFact=10.0f , const float zFact = 20.0f);
+
 int main()
 {
-  SoftwareRasteriser r(800, 600);
-  const float aspect = 800.0 / 600.0;
+  const int screenX = 800;
+  const int screenY = 600;
+  SoftwareRasteriser r(screenX, screenY);
 
+  const float aspect = (float) screenX / (float) screenY;
   r.SetProjectionMatrix(Matrix4::Perspective(1.0, 100.0, aspect, 45.0));
 
-  Mesh * testTri = Mesh::GenerateTriangle();
-    
-  RenderObject * o1 = new RenderObject();
-  RenderObject * o2 = new RenderObject();
-  RenderObject * o3 = new RenderObject();
-  RenderObject * o4 = new RenderObject();
+  vector<RenderObject *> drawables;
   
-  o1->mesh = testTri;
-  o2->mesh = testTri;
-  o3->mesh = testTri;
-  o4->mesh = testTri;
-  
-  o1->modelMatrix = Matrix4::Rotation(180.0f, Vector3(0, 1, 0));
-  o2->modelMatrix = Matrix4::Translation(Vector3(-0.6, 0.6, -2));
-  o3->modelMatrix = Matrix4::Translation(Vector3(0.6, -0.6, -2));
-  o4->modelMatrix = Matrix4::Translation(Vector3(0.6, 0.6, -2));
+  //TODO
+  generateRandomStarfield(drawables, 10000, 1, 1);
 
-  o2->texture = Texture::TextureFromTGA("../brick.tga");
+  RenderObject * o = new RenderObject();
+  o->mesh = Mesh::GenerateTriangle();
+  o->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -2.0f));
+  drawables.push_back(o);
+  //END
 
   const float diff = 0.01f;
   Matrix4 viewMatrix;
-  Vector3 camTranslate = Vector3(0, 0, 0);
+  Vector3 camTranslate = Vector3(0, 0, -5);
 
   while (r.UpdateWindow())
   {
     if (Keyboard::KeyDown(KEY_A))
-      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(-diff, 0.0f, 0.0f));
+      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(diff, 0.0f, -diff));
     if (Keyboard::KeyDown(KEY_D))
-      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(diff, 0.0f, 0.0f));
+      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(-diff, 0.0f, diff));
     if (Keyboard::KeyDown(KEY_W))
-      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(0.0f, -diff, 0.0f));
-    if (Keyboard::KeyDown(KEY_S))
-      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(0.0f, diff, 0.0f));
-
-    if (Keyboard::KeyDown(KEY_UP))
       camTranslate.z += diff;
-    if (Keyboard::KeyDown(KEY_DOWN))
+    if (Keyboard::KeyDown(KEY_S))
       camTranslate.z -= diff;
 
     if (Keyboard::KeyTriggered(KEY_F))
@@ -61,18 +52,33 @@ int main()
       std::cout << r.GetBlendState() << std::endl;
     }
 
-    //r.SetViewMatrix(viewMatrix);
-    r.SetViewMatrix(Matrix4::Translation(camTranslate));
+    r.SetViewMatrix(viewMatrix * Matrix4::Translation(camTranslate));
 
     r.ClearBuffers();
 
-    r.DrawObject(o1);
-    r.DrawObject(o2);
-    r.DrawObject(o3);
-    r.DrawObject(o4);
+    for (vector<RenderObject *>::iterator it = drawables.begin(); it != drawables.end(); ++it)
+      r.DrawObject(*it);
 
     r.SwapBuffers();
   }
 
+  // Remove all drawables, memory is freed in the RenderObject destructor
+  drawables.clear();
+  
   return 0;
+}
+
+void generateRandomStarfield(vector<RenderObject *> &out, const int num, const float xyFact, const float zFact)
+{
+  for (int i = 0; i < num; ++i)
+  {
+    const float x = ((float) ((rand() % 100) - 50)) / xyFact;
+    const float y = ((float) ((rand() % 100) - 50)) / xyFact;
+    const float z = ((float) ((rand() % 100) - 50)) / zFact;
+
+    RenderObject * o = new RenderObject;
+    o->mesh = Mesh::GeneratePoint(Vector3());
+    o->modelMatrix = Matrix4::Translation(Vector3(x, y, z));
+    out.push_back(o);
+  }
 }
