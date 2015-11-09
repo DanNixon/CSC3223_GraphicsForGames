@@ -78,10 +78,14 @@ public:
 
   inline bool DepthFunc(int x, int y, float depthValue)
   {
+    if (y < 0 || x < 0)
+      return false;
+
     int index = (y * screenWidth) + x;
     unsigned int castVal = (unsigned int) depthValue;
     if (castVal > m_depthBuffer[index])
       return false;
+
     m_depthBuffer[index] = castVal;
     return true;  }
 

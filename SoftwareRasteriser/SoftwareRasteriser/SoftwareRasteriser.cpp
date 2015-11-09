@@ -430,7 +430,7 @@ void SoftwareRasteriser::RasteriseLine(const Vector4 &v0, const Vector4 &v1, con
     }
 
     if (DepthFunc((int) x, (int) y, zVal))
-      ShadePixel(x, y, c);
+      BlendPixel(x, y, c);
 
     error += absSlope;
 
@@ -661,7 +661,6 @@ void SoftwareRasteriser::RasteriseLinesMesh(RenderObject *o)
 
     t0 /= v0.w;
     t1 /= v1.w;
-
     v0.SelfDivisionByW();
     v1.SelfDivisionByW();
 

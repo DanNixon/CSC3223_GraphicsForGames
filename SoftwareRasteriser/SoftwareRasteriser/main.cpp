@@ -23,6 +23,11 @@ int main()
   o->mesh = Mesh::GenerateTriangle();
   o->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -2.0f));
   drawables.push_back(o);
+
+  RenderObject * o2 = new RenderObject();
+  o2->mesh = Mesh::GenerateNSided(49);
+  o2->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -2.0f));
+  drawables.push_back(o2);
   //END
 
   const float diff = 0.01f;
@@ -32,9 +37,9 @@ int main()
   while (r.UpdateWindow())
   {
     if (Keyboard::KeyDown(KEY_A))
-      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(diff, 0.0f, -diff));
+      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(diff, 0.0f, 0.0f));
     if (Keyboard::KeyDown(KEY_D))
-      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(-diff, 0.0f, diff));
+      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(-diff, 0.0f, 0.0f));
     if (Keyboard::KeyDown(KEY_W))
       camTranslate.z += diff;
     if (Keyboard::KeyDown(KEY_S))

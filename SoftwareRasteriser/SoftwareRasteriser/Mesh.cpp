@@ -100,6 +100,37 @@ Mesh *Mesh::GenerateLine(const Vector3 &from, const Vector3 &to)
   return m;
 }
 
+Mesh *Mesh::GenerateNSided(const int n)
+{
+  Mesh *m = new Mesh();
+  m->type = PRIMITIVE_LINES;
+
+  m->numVertices = n * 2;
+  m->vertices = new Vector4[m->numVertices];
+  m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
+
+  const float p = 2 * PI / n;
+  for (int i = 0; i < m->numVertices; i += 2)
+  {
+    const float x1 = cos(p * i);
+    const float y1 = sin(p * i);
+
+    m->vertices[i] = Vector4(x1, y1, 0.0, 1.0f);
+    m->colours[i] = Colour(255, 255, 255, 255);
+    m->textureCoords[i] = Vector2(x1, y1);
+
+    const float x2 = cos(p * (i+1));
+    const float y2 = sin(p * (i+1));
+
+    m->vertices[i+1] = Vector4(x2, y2, 0.0, 1.0f);
+    m->colours[i+1] = Colour(255, 255, 255, 255);
+    m->textureCoords[i+1] = Vector2(x2, y2);
+  }
+
+  return m;
+}
+
 Mesh *Mesh::GenerateTriangle()
 {
   Mesh *m = new Mesh();
