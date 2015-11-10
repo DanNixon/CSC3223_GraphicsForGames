@@ -32,35 +32,47 @@ int main()
 
   const float diff = 0.01f;
   Matrix4 viewMatrix;
-  Vector3 camTranslate = Vector3(0, 0, -5);
+  Matrix4 camRotation;
 
   while (r.UpdateWindow())
   {
+    // Toggle texture sample mode
+    if (Keyboard::KeyTriggered(KEY_F))
+    {
+      r.SwitchTextureFiltering();
+      std::cout << "Texture sample mode: " << r.GetTextureSampleState() << std::endl;
+    }
+
+    // Toggle blend mode
+    if (Keyboard::KeyTriggered(KEY_E))
+    {
+      r.SwitchBlendState();
+      std::cout << "Blend mode: " << r.GetBlendState() << std::endl;
+    }
+
+    // Handle strafe movement
     if (Keyboard::KeyDown(KEY_A))
       viewMatrix = viewMatrix * Matrix4::Translation(Vector3(diff, 0.0f, 0.0f));
     if (Keyboard::KeyDown(KEY_D))
       viewMatrix = viewMatrix * Matrix4::Translation(Vector3(-diff, 0.0f, 0.0f));
+
+    // Handle camera/POV Z movement
     if (Keyboard::KeyDown(KEY_W))
-      camTranslate.z += diff;
+      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(0.0f, 0.0f, diff));
     if (Keyboard::KeyDown(KEY_S))
-      camTranslate.z -= diff;
+      viewMatrix = viewMatrix * Matrix4::Translation(Vector3(0.0f, 0.0f, -diff));
 
-    if (Keyboard::KeyTriggered(KEY_F))
-    {
-      r.SwitchTextureFiltering();
-      std::cout << r.GetTextureSampleState() << std::endl;
-    }
+    // Handle camera/POV rotation
+    const Vector2 mouseRelPos = Mouse::GetRelativePosition();
+    camRotation = camRotation
+                * Matrix4::Rotation(mouseRelPos.x, Vector3(0.0f, 1.0f, 0.0f))
+                * Matrix4::Rotation(mouseRelPos.y, Vector3(1.0f, 0.0f, 0.0f));
 
-    if (Keyboard::KeyTriggered(KEY_E))
-    {
-      r.SwitchBlendState();
-      std::cout << r.GetBlendState() << std::endl;
-    }
-
-    r.SetViewMatrix(viewMatrix * Matrix4::Translation(camTranslate));
+    r.SetViewMatrix(viewMatrix * camRotation);
 
     r.ClearBuffers();
 
+    // Draw scene objects
     for (vector<RenderObject *>::iterator it = drawables.begin(); it != drawables.end(); ++it)
       r.DrawObject(*it);
 

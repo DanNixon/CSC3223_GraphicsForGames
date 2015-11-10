@@ -78,7 +78,7 @@ public:
 
   inline bool DepthFunc(int x, int y, float depthValue)
   {
-    if (y < 0 || x < 0)
+    if (y < 0 || x < 0 || y >= screenHeight || x >= screenWidth)
       return false;
 
     int index = (y * screenWidth) + x;
