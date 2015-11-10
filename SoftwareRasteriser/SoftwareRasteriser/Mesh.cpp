@@ -155,3 +155,65 @@ Mesh *Mesh::GenerateTriangle()
 
   return m;
 }
+
+Mesh *Mesh::GenerateTriangleStrip()
+{
+  Mesh *m = new Mesh();
+  m->type = PRIMITIVE_TRIANGLE_STRIP;
+
+  m->numVertices = 5;
+  m->vertices = new Vector4[m->numVertices];
+  m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
+
+  m->vertices[0] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+  m->vertices[1] = Vector4(0.25f, 0.5f, 0.0f, 1.0f);
+  m->vertices[2] = Vector4(0.5f, 0.0f, 0.0f, 1.0f);
+  m->vertices[3] = Vector4(0.75f, 0.5f, 0.0f, 1.0f);
+  m->vertices[4] = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+  m->colours[0] = Colour(255, 0, 0, 127);
+  m->colours[1] = Colour(0, 255, 0, 127);
+  m->colours[2] = Colour(0, 0, 255, 127);
+  m->colours[3] = Colour(255, 0, 0, 255);
+  m->colours[4] = Colour(0, 255, 0, 255);
+
+  m->textureCoords[0] = Vector2(0.0f, 0.0f);
+  m->textureCoords[1] = Vector2(0.5f, 1.0f);
+  m->textureCoords[2] = Vector2(1.0f, 0.0f);
+  m->textureCoords[3] = Vector2(1.0f, 0.5f);
+  m->textureCoords[4] = Vector2(0.5f, 0.5f);
+
+  return m;
+}
+
+Mesh *Mesh::GenerateTriangleFan()
+{
+  Mesh *m = new Mesh();
+  m->type = PRIMITIVE_TRIANGLE_FAN;
+
+  m->numVertices = 5;
+  m->vertices = new Vector4[m->numVertices];
+  m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
+
+  m->vertices[0] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+  m->vertices[1] = Vector4(0.5f, 0.5f, 0.0f, 1.0f);
+  m->vertices[2] = Vector4(0.5f, -0.5f, 0.0f, 1.0f);
+  m->vertices[3] = Vector4(-0.5f, -0.5f, 0.0f, 1.0f);
+  m->vertices[4] = Vector4(-0.5f, 0.5f, 0.0f, 1.0f);
+
+  m->colours[0] = Colour(0, 0, 0, 127);
+  m->colours[1] = Colour(255, 0, 0, 127);
+  m->colours[2] = Colour(0, 255, 0, 127);
+  m->colours[3] = Colour(0, 0, 255, 127);
+  m->colours[4] = Colour(255, 255, 255, 127);
+
+  m->textureCoords[0] = Vector2(0.0f, 0.0f);
+  m->textureCoords[1] = Vector2(0.5f, 1.0f);
+  m->textureCoords[2] = Vector2(1.0f, 0.0f);
+  m->textureCoords[3] = Vector2(1.0f, 0.0f);
+  m->textureCoords[4] = Vector2(1.0f, 0.0f);
+
+  return m;
+}

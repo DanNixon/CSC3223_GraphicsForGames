@@ -30,7 +30,9 @@ enum PrimitiveType
 {
   PRIMITIVE_POINTS,
   PRIMITIVE_LINES,
-  PRIMITIVE_TRIANGLES
+  PRIMITIVE_TRIANGLES,
+  PRIMITIVE_TRIANGLE_STRIP,
+  PRIMITIVE_TRIANGLE_FAN
 };
 
 class Mesh
@@ -46,6 +48,8 @@ public:
   static Mesh *GenerateLine(const Vector3 &from, const Vector3 &to);
   static Mesh *GenerateNSided(const int n);
   static Mesh *GenerateTriangle();
+  static Mesh *GenerateTriangleStrip();
+  static Mesh *GenerateTriangleFan();
 
   PrimitiveType GetType()
   {

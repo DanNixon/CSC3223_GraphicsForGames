@@ -20,7 +20,8 @@ int main()
   generateRandomStarfield(drawables, 10000, 1, 1);
 
   RenderObject * o = new RenderObject();
-  o->mesh = Mesh::GenerateTriangle();
+  o->mesh = Mesh::GenerateTriangleFan();
+  //o->texture = Texture::TextureFromTGA("../brick.tga");
   o->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -2.0f));
   drawables.push_back(o);
 

@@ -159,6 +159,8 @@ protected:
   void RasterisePointsMesh(RenderObject *o);
   void RasteriseLinesMesh(RenderObject *o);
   void RasteriseTriMesh(RenderObject *o);
+  void RasteriseTriMeshStrip(RenderObject *o);
+  void RasteriseTriMeshFan(RenderObject *o);
 
   BoundingBox CalculateBoxForTri(const Vector4 &a, const Vector4 &b, const Vector4 &c);
 

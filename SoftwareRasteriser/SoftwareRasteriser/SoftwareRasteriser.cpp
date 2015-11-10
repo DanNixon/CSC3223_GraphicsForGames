@@ -47,7 +47,7 @@ float SoftwareRasteriser::ScreenAreaOfTri(const Vector4 &v0, const Vector4 &v1, 
 {
   float area = ((v0.x * v1.y) + (v1.x * v2.y) + (v2.x * v0.y)) -
                ((v1.x * v0.y) + (v2.x * v1.y) + (v0.x * v2.y));
-  return area * 0.05f;
+  return area * 0.5f;
 }
 
 SoftwareRasteriser::SoftwareRasteriser(uint width, uint height)
@@ -162,6 +162,12 @@ void SoftwareRasteriser::DrawObject(RenderObject *o)
     break;
   case PRIMITIVE_TRIANGLES:
     RasteriseTriMesh(o);
+    break;
+  case PRIMITIVE_TRIANGLE_STRIP:
+    RasteriseTriMeshStrip(o);
+    break;
+  case PRIMITIVE_TRIANGLE_FAN:
+    RasteriseTriMeshFan(o);
     break;
   }
 }
@@ -452,9 +458,7 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
   Vector4 v2p = m_portMatrix * v2;
 
   const BoundingBox b = CalculateBoxForTri(v0p, v1p, v2p);
-  const float triArea = ScreenAreaOfTri(v0p, v1p, v2p);
-  if (triArea <= 0.0f)
-    return;
+  const float triArea = abs(ScreenAreaOfTri(v0p, v1p, v2p));
 
   const float areaRecip = 1.0f / triArea;
 
@@ -475,7 +479,7 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
       float triSum = subTriArea[0] + subTriArea[1] + subTriArea[2];
 
       // Check if pixel is outside of triangle
-      if (triSum > (triArea + 0.01f))
+      if (triSum > (triArea + 1.0f))
         continue;
 
       // Check if tringle is very small
@@ -614,9 +618,7 @@ void SoftwareRasteriser::RasteriseTriEdgeSpans(const Vector4 &v0, const Vector4 
     float maxX = max(start.x, end.x);
 
     for (float x = minX; x < maxX; ++x)
-    {
       BlendPixel((int)x, (int)y, Colour::White);
-    }
 
     start.x += longStep;
     end.x += shortStep;
@@ -671,10 +673,31 @@ void SoftwareRasteriser::RasteriseLinesMesh(RenderObject *o)
 void SoftwareRasteriser::RasteriseTriMesh(RenderObject *o)
 {
   Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
+  Mesh * m = o->GetMesh();
 
   for (uint i = 0; i < o->GetMesh()->numVertices; i += 3)
   {
-    Mesh * m = o->GetMesh();
+    Vector4 v0 = mvp * m->vertices[i];
+    Vector4 v1 = mvp * m->vertices[i + 1];
+    Vector4 v2 = mvp * m->vertices[i + 2];
+
+    SutherlandHodgmanTri(v0, v1, v2,
+      m->colours[i], m->colours[i + 1], m->colours[i + 2],
+      m->textureCoords[i], m->textureCoords[i + 1],
+      m->textureCoords[i + 2]);
+  }
+}
+
+void SoftwareRasteriser::RasteriseTriMeshStrip(RenderObject *o)
+{
+  Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
+  Mesh * m = o->GetMesh();
+
+  for (uint i = 0; i < o->GetMesh()->numVertices - 2; ++i)
+  {
+    Vector4 vv0 = m->vertices[i];
+    Vector4 vv1 = m->vertices[i+1];
+    Vector4 vv2 = m->vertices[i+2];
 
     Vector4 v0 = mvp * m->vertices[i];
     Vector4 v1 = mvp * m->vertices[i + 1];
@@ -684,6 +707,24 @@ void SoftwareRasteriser::RasteriseTriMesh(RenderObject *o)
       m->colours[i], m->colours[i + 1], m->colours[i + 2],
       m->textureCoords[i], m->textureCoords[i + 1],
       m->textureCoords[i + 2]);
+  }
+}
+
+void SoftwareRasteriser::RasteriseTriMeshFan(RenderObject *o)
+{
+  Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
+  Mesh * m = o->GetMesh();
+  Vector4 v0 = mvp * m->vertices[0];
+
+  for (uint i = 1; i < o->GetMesh()->numVertices - 1; ++i)
+  {
+    Vector4 v1 = mvp * m->vertices[i];
+    Vector4 v2 = mvp * m->vertices[i + 1];
+
+    SutherlandHodgmanTri(v0, v1, v2,
+      m->colours[0], m->colours[i], m->colours[i + 1],
+      m->textureCoords[0], m->textureCoords[i],
+      m->textureCoords[i + 1]);
   }
 }
 
