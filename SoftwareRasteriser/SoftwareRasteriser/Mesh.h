@@ -50,7 +50,7 @@ public:
   static Mesh *GenerateTriangle();
   static Mesh *GenerateTriangleStrip();
   static Mesh *GenerateTriangleFan();
-  static Mesh *GenerateSphere();
+  static Mesh *GenerateSphere(const int resolution = 10, const Colour &c = Colour::White);
 
   PrimitiveType GetType()
   {
