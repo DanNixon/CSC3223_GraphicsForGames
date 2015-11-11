@@ -50,6 +50,7 @@ public:
   static Mesh *GenerateTriangle();
   static Mesh *GenerateTriangleStrip();
   static Mesh *GenerateTriangleFan();
+  static Mesh *GenerateSphere();
 
   PrimitiveType GetType()
   {

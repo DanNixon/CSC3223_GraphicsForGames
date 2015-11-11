@@ -220,3 +220,36 @@ Mesh *Mesh::GenerateTriangleFan()
 
   return m;
 }
+
+Mesh *Mesh::GenerateSphere()
+{
+  int res = 20;
+
+  Mesh *m = new Mesh();
+  m->type = PRIMITIVE_POINTS;
+
+  m->numVertices = res * (res);
+  m->vertices = new Vector4[m->numVertices];
+  m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
+
+  int n = 0;
+  for (int i = 0; i < res; i++)
+  {
+    const float theta1 = i * (PI / res);
+    const float theta2 = (i + 1) * (PI / res);
+
+    for (int j = 0; j < res; j++)
+    {
+      const float phi1 = j * ((PI * 2) / res);
+      const float phi2 = (j + 1) * ((PI * 2) / res);
+
+      m->vertices[n] = Vector4(cos(theta1) * sin(phi1), sin(theta1) * sin(phi1), cos(phi1), 1.0f);
+      m->colours[n] = Colour::White;
+      m->textureCoords[n] = Vector2(0.0f, 0.0f);
+      n++;
+    }
+  }
+
+  return m;
+}

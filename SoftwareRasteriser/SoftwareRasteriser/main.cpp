@@ -19,17 +19,17 @@ int main()
   vector<RenderObject *> drawables;
   
   // Generate star field
-  generateRandomStarfield(drawables, 10000);
+  //generateRandomStarfield(drawables, 10000);
 
   // Generate asteroids
-  generateRandomAsteroids(drawables, 100);
+  //generateRandomAsteroids(drawables, 100);
 
   // Generate more asteroids closer to scene
-  generateRandomAsteroids(drawables, 50, 0.5);
+  //generateRandomAsteroids(drawables, 50, 0.5);
 
   //TODO
   RenderObject * o = new RenderObject();
-  o->mesh = Mesh::GenerateTriangleFan();
+  o->mesh = Mesh::GenerateSphere();
   //o->texture = Texture::TextureFromTGA("../brick.tga");
   o->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -2.0f));
   drawables.push_back(o);
@@ -73,7 +73,7 @@ int main()
                 * Matrix4::Rotation(mouseRelPos.x, Vector3(0.0f, 1.0f, 0.0f))
                 * Matrix4::Rotation(mouseRelPos.y, Vector3(1.0f, 0.0f, 0.0f));
 
-    r.SetViewMatrix(viewMatrix * camRotation);
+    r.SetViewMatrix(viewMatrix *camRotation);
 
     r.ClearBuffers();
 
