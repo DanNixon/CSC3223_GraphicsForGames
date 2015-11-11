@@ -46,11 +46,13 @@ public:
   static Mesh *LoadMeshFile(const string & filename);
   static Mesh *GeneratePoint(const Vector3 &pos, const Colour &col = Colour(255, 255, 255, 255));
   static Mesh *GenerateLine(const Vector3 &from, const Vector3 &to);
-  static Mesh *GenerateNSided(const int n);
+  static Mesh *GenerateNSided2D(const int n);
   static Mesh *GenerateTriangle();
   static Mesh *GenerateTriangleStrip();
   static Mesh *GenerateTriangleFan();
-  static Mesh *GenerateSphere(const int resolution = 10, const Colour &c = Colour::White);
+  static Mesh *GenerateSphere(const float radius = 1.0f, const int resolution = 10, const Colour &c = Colour::White);
+  static Mesh *GenerateDisc2D(const float radius = 1.0f, const int resolution = 10);
+  static Mesh *GenerateRing2D(const float radiusOuter = 1.0f, const float radiusInner = 0.8f);
 
   PrimitiveType GetType()
   {

@@ -15,44 +15,64 @@ int main()
 
   const float aspect = (float) screenX / (float) screenY;
   r.SetProjectionMatrix(Matrix4::Perspective(1.0, 100.0, aspect, 45.0));
+  r.SetTextureSamplingMode(SAMPLE_BILINEAR);
 
   vector<RenderObject *> drawables;
   
-  // Generate star field
+  // Generate star field (random point primitives)
   generateRandomStarfield(drawables, 10000);
 
-  // Generate asteroids
+  // Generate asteroids (random line primitive shapes)
   generateRandomAsteroids(drawables, 100);
 
-  // Generate more asteroids closer to scene
+  // Generate more asteroids closer to scene (random line primitive shapes)
   generateRandomAsteroids(drawables, 50, 0.5);
   
-  //TODO
+  // Blue moon (textured sphere)
+  RenderObject * moon = new RenderObject();
+  moon->mesh = Mesh::GenerateSphere(3.0f, 20, Colour(255, 0, 0, 255));
+  moon->texture = Texture::TextureFromTGA("../moon.tga");
+  moon->modelMatrix = Matrix4::Translation(Vector3(6.0f, 5.0f, -20.0f));
+  drawables.push_back(moon);
+
+  //TODO (triangle fan)
   RenderObject * o = new RenderObject();
-  o->mesh = Mesh::GenerateSphere(20, Colour(255, 0, 0, 255));
-  //o->texture = Texture::TextureFromTGA("../brick.tga");
+  o->mesh = Mesh::GenerateDisc2D(1.0, 30);
   o->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -2.0f));
   drawables.push_back(o);
-  //END
 
-  const float movementDelta = 0.01f;
+  //TODO
+  // Spaceship with interpolated colour
+  // Motion
+  // Semi-transparency
+
   Matrix4 viewMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -10.0f));
   Matrix4 camRotation;
 
   while (r.UpdateWindow())
   {
-    // Toggle texture sample mode
-    if (Keyboard::KeyTriggered(KEY_F))
-    {
-      r.SwitchTextureFiltering();
-      std::cout << "Texture sample mode: " << r.GetTextureSampleState() << std::endl;
-    }
+    // Move faster when holding shift
+    float movementDelta = 0.02f;
+    if (Keyboard::KeyHeld(KEY_SHIFT))
+      movementDelta = 0.1f;
 
     // Toggle blend mode
     if (Keyboard::KeyTriggered(KEY_E))
     {
-      r.SwitchBlendState();
-      std::cout << "Blend mode: " << r.GetBlendState() << std::endl;
+      string mode;
+
+      if (r.GetBlendMode() == BLEND_ALPHA)
+      {
+        r.SetBlendMode(BLEND_ADDITIVE);
+        mode = "add";
+      }
+      else
+      {
+        r.SetBlendMode(BLEND_ALPHA);
+        mode = "alpha";
+      }
+
+      std::cout << "Blend mode: " << mode << std::endl;
     }
 
     // Handle strafe movement
@@ -154,11 +174,11 @@ void generateAsteroid2D(vector<RenderObject *> &out, const Vector3 &position, co
   const float rot = (float)((rand() % 40) + 160);
 
   RenderObject * o1 = new RenderObject();
-  o1->mesh = Mesh::GenerateNSided(5);
+  o1->mesh = Mesh::GenerateNSided2D(5);
   o1->modelMatrix = modelMat;
 
   RenderObject * o2 = new RenderObject();
-  o2->mesh = Mesh::GenerateNSided(7);
+  o2->mesh = Mesh::GenerateNSided2D(7);
   o2->modelMatrix = modelMat * Matrix4::Scale(Vector3(0.85f, 0.85f, 0.85f)) * Matrix4::Rotation(rot, Vector3(0.0f, 0.0f, 1.0f));
 
   out.push_back(o1);

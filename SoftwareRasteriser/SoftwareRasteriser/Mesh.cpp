@@ -103,7 +103,7 @@ Mesh *Mesh::GenerateLine(const Vector3 &from, const Vector3 &to)
   return m;
 }
 
-Mesh *Mesh::GenerateNSided(const int n)
+Mesh *Mesh::GenerateNSided2D(const int n)
 {
   Mesh *m = new Mesh();
   m->type = PRIMITIVE_LINES;
@@ -221,7 +221,15 @@ Mesh *Mesh::GenerateTriangleFan()
   return m;
 }
 
-Mesh *Mesh::GenerateSphere(const int resolution, const Colour &c)
+/**
+ * Generates a 3D sphere.
+ *
+ * \param radius Radius (default 1.0)
+ * \param resolution Number of "slices" in lon and lat
+ * \param c Solid colour
+ * \return New mesh
+ */
+Mesh *Mesh::GenerateSphere(const float radius, const int resolution, const Colour &c)
 {
   Mesh *m = new Mesh();
   m->type = PRIMITIVE_TRIANGLE_STRIP;
@@ -234,27 +242,95 @@ Mesh *Mesh::GenerateSphere(const int resolution, const Colour &c)
   const float deltaTheta = (PI / resolution);
   const float deltaPhi = ((PI * 2) / resolution);
 
+  const float texEpsilon = 1.0f / resolution;
+
   int n = 0;
   for (int i = 0; i < resolution; i++)
   {
     const float theta1 = i * deltaTheta;
     const float theta2 = (i + 1) * deltaTheta;
 
+    const float u1 = i * texEpsilon;
+    const float u2 = (i + 1) * texEpsilon;
+
     for (int j = 0; j < resolution; j++)
     {
-      const float phi1 = j * deltaPhi;
+      const float phi = j * deltaPhi;
 
-      m->vertices[n] = Vector4(cos(theta1) * sin(phi1), sin(theta1) * sin(phi1), cos(phi1), 1.0f);
+      const float v = j * texEpsilon;
+
+      m->vertices[n] = Vector4(cos(theta1) * sin(phi) * radius,
+                               sin(theta1) * sin(phi) * radius,
+                               cos(phi) * radius,
+                               1.0f);
       m->colours[n] = c;
-      m->textureCoords[n] = Vector2(i, j);
+      m->textureCoords[n] = Vector2(u1, v);
       n++;
 
-      m->vertices[n] = Vector4(cos(theta2) * sin(phi1), sin(theta2) * sin(phi1), cos(phi1), 1.0f);
+      m->vertices[n] = Vector4(cos(theta2) * sin(phi) * radius,
+                               sin(theta2) * sin(phi) * radius,
+                               cos(phi) * radius,
+                               1.0f);
       m->colours[n] = c;
-      m->textureCoords[n] = Vector2(i + 1, j);
+      m->textureCoords[n] = Vector2(u2, v);
       n++;
     }
   }
+
+  return m;
+}
+
+/**
+* Generates a 2D filled circle/disc.
+*
+* \param radius Radius (default 1.0)
+* \param resolution Number of "slices" in angle
+* \return New mesh
+*/
+Mesh *Mesh::GenerateDisc2D(const float radius, const int resolution)
+{
+  Mesh *m = new Mesh();
+  m->type = PRIMITIVE_TRIANGLE_FAN;
+
+  m->numVertices = resolution + 1;
+  m->vertices = new Vector4[m->numVertices];
+  m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
+
+  const float deltaA = ((PI) / resolution);
+  const float texEpsilon = 1.0f / (resolution + 1);
+
+  // "Origin" vertex
+  m->vertices[0] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+  m->colours[0] = Colour::White;
+  m->textureCoords[0] = Vector2(0, 0);
+
+  for (int i = 1; i < resolution + 1; ++i)
+  {
+    float a = i * deltaA;
+    float u = i * texEpsilon;
+
+    m->vertices[i] = Vector4(cos(a) * sin(a) * radius,
+                             sin(a) * sin(a) * radius,
+                             0.0f, 1.0f);
+    m->colours[i] = Colour::White;
+    m->textureCoords[i] = Vector2(u, 0);
+  }
+
+  return m;
+}
+
+Mesh *Mesh::GenerateRing2D(const float radiusOuter, const float radiusInner)
+{
+  Mesh *m = new Mesh();
+  m->type = PRIMITIVE_TRIANGLE_STRIP;
+
+  m->numVertices = 0;
+  m->vertices = new Vector4[m->numVertices];
+  m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
+
+  //TODO
 
   return m;
 }

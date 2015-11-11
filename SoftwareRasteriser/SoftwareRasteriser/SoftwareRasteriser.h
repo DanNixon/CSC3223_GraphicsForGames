@@ -27,14 +27,14 @@ _-_-_-_-_-_-_-""  ""
 
 using std::vector;
 
-enum BlendState
+enum BlendMode
 {
   BLEND_REPLACE,
   BLEND_ALPHA,
   BLEND_ADDITIVE
 };
 
-enum SampleState
+enum TextureSampleMode
 {
   SAMPLE_NEAREST,
   SAMPLE_BILINEAR,
@@ -91,45 +91,22 @@ public:
     m_depthBuffer[index] = castVal;
     return true;  }
 
-  void SwitchTextureFiltering()
+  void SetTextureSamplingMode(TextureSampleMode mode)
   {
-    switch (m_texSampleState)
-    {
-    case SAMPLE_NEAREST:
-      m_texSampleState = SAMPLE_BILINEAR;
-      break;
-    case SAMPLE_BILINEAR:
-      m_texSampleState = SAMPLE_MIPMAP_NEAREST;
-      break;
-    //case SAMPLE_MIPMAP_NEAREST:
-      //m_texSampleState = SAMPLE_MIPMAP_BILINEAR;
-      //break;
-    default:
-      m_texSampleState = SAMPLE_NEAREST;
-    }
+    m_texSampleState = mode;
   }
 
-  SampleState GetTextureSampleState()
+  TextureSampleMode GetTextureSamplingMode()
   {
     return m_texSampleState;
   }
 
-  void SwitchBlendState()
+  void SetBlendMode(BlendMode mode)
   {
-    switch (m_blendState)
-    {
-    case BLEND_REPLACE:
-      m_blendState = BLEND_ALPHA;
-      break;
-    case BLEND_ALPHA:
-      m_blendState = BLEND_ADDITIVE;
-      break;
-    default:
-      m_blendState = BLEND_REPLACE;
-    }
+    m_blendState = mode;
   }
 
-  BlendState GetBlendState()
+  BlendMode GetBlendMode()
   {
     return m_blendState;
   }
@@ -240,6 +217,6 @@ protected:
   Matrix4 m_viewProjMatrix;
   Matrix4 m_portMatrix;
 
-  SampleState m_texSampleState;
-  BlendState m_blendState;
+  TextureSampleMode m_texSampleState;
+  BlendMode m_blendState;
 };
