@@ -38,8 +38,10 @@ enum SampleState
 {
   SAMPLE_NEAREST,
   SAMPLE_BILINEAR,
-  SAMPLE_MIPMAP_NEAREST,
-  SAMPLE_MIPMAP_BILINEAR
+  SAMPLE_MIPMAP_NEAREST
+
+  //TODO
+  //SAMPLE_MIPMAP_BILINEAR
 };
 
 struct BoundingBox
@@ -99,9 +101,9 @@ public:
     case SAMPLE_BILINEAR:
       m_texSampleState = SAMPLE_MIPMAP_NEAREST;
       break;
-    case SAMPLE_MIPMAP_NEAREST:
-      m_texSampleState = SAMPLE_MIPMAP_BILINEAR;
-      break;
+    //case SAMPLE_MIPMAP_NEAREST:
+      //m_texSampleState = SAMPLE_MIPMAP_BILINEAR;
+      //break;
     default:
       m_texSampleState = SAMPLE_NEAREST;
     }

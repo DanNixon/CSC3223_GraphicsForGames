@@ -44,7 +44,7 @@ public:
   ~Mesh(void);
 
   static Mesh *LoadMeshFile(const string & filename);
-  static Mesh *GeneratePoint(const Vector3 &pos);
+  static Mesh *GeneratePoint(const Vector3 &pos, const Colour &col = Colour(255, 255, 255, 255));
   static Mesh *GenerateLine(const Vector3 &from, const Vector3 &to);
   static Mesh *GenerateNSided(const int n);
   static Mesh *GenerateTriangle();

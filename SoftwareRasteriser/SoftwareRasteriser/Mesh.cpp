@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <vector>
 
 Mesh::Mesh(void)
 {
@@ -69,15 +70,17 @@ Mesh * Mesh::LoadMeshFile(const string & filename)
   return m;
 }
 
-Mesh *Mesh::GeneratePoint(const Vector3 &from)
+Mesh *Mesh::GeneratePoint(const Vector3 &from, const Colour &col)
 {
   Mesh *m = new Mesh();
   m->type = PRIMITIVE_POINTS;
 
   m->numVertices = 1;
   m->vertices = new Vector4[m->numVertices];
+  m->colours = new Colour[m->numVertices];
 
   m->vertices[0] = Vector4(from.x, from.y, from.z, 1.0f);
+  m->colours[0] = Colour(col.r, col.g, col.b, col.a);
 
   return m;
 }

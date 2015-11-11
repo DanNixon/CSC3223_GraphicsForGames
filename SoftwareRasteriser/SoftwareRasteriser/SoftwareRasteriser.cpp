@@ -633,7 +633,7 @@ void SoftwareRasteriser::RasterisePointsMesh(RenderObject *o)
     Vector4 vertexPos = mvp * o->GetMesh()->vertices[i];
     vertexPos.SelfDivisionByW();
     Vector4 screenPos = m_portMatrix * vertexPos;
-    BlendPixel((uint)screenPos.x, (uint)screenPos.y, Colour::White);
+    BlendPixel((uint)screenPos.x, (uint)screenPos.y, o->GetMesh()->colours[i]);
   }
 }
 
