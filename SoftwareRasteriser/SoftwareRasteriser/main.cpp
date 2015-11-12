@@ -14,8 +14,9 @@ int main()
   SoftwareRasteriser r(screenX, screenY);
 
   const float aspect = (float) screenX / (float) screenY;
-  r.SetProjectionMatrix(Matrix4::Perspective(1.0, 100.0, aspect, 45.0));
+  r.SetProjectionMatrix(Matrix4::Perspective(0.1f, 100.0f, aspect, 45.0f));
   r.SetTextureSamplingMode(SAMPLE_BILINEAR);
+  r.SetBlendMode(BLEND_ALPHA);
 
   vector<RenderObject *> drawables;
   
@@ -32,29 +33,33 @@ int main()
   RenderObject * moon = new RenderObject();
   moon->mesh = Mesh::GenerateSphere(3.0f, 20, Colour(255, 0, 0, 255));
   moon->texture = Texture::TextureFromTGA("../moon.tga");
-  moon->modelMatrix = Matrix4::Translation(Vector3(6.0f, 5.0f, -20.0f));
+  moon->modelMatrix = Matrix4::Translation(Vector3(-2.0f, -3.0f, -10.0f));
   drawables.push_back(moon);
 
-  //TODO (triangle fan)
-  RenderObject * o = new RenderObject();
-  o->mesh = Mesh::GenerateDisc2D(1.0, 30);
-  o->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -2.0f));
-  drawables.push_back(o);
+  // Planet (triangle fan)
+  RenderObject * planet = new RenderObject();
+  planet->mesh = Mesh::GenerateDisc2D(15.0, 30);
+  planet->texture = Texture::TextureFromTGA("../planet.tga");
+  planet->modelMatrix = Matrix4::Translation(Vector3(-10.0f, -15.0f, -20.0f));
+  drawables.push_back(planet);
+  
+  // Spaceship (triangles with interpolated colours and semi-transparency on windows)
+  RenderObject * spaceship = new RenderObject();
+  spaceship->mesh = Mesh::LoadMeshFile("../spaceship.asciimesh");
+  spaceship->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -5.0f));
+  drawables.push_back(spaceship);
 
-  //TODO
-  // Spaceship with interpolated colour
-  // Motion
-  // Semi-transparency
-
+  //TODO: Motion
+  
   Matrix4 viewMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -10.0f));
   Matrix4 camRotation;
 
   while (r.UpdateWindow())
   {
     // Move faster when holding shift
-    float movementDelta = 0.02f;
+    float movementDelta = 0.05f;
     if (Keyboard::KeyHeld(KEY_SHIFT))
-      movementDelta = 0.1f;
+      movementDelta = 0.2f;
 
     // Toggle blend mode
     if (Keyboard::KeyTriggered(KEY_E))
