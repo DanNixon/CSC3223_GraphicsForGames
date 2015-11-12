@@ -303,23 +303,22 @@ Mesh *Mesh::GenerateDisc2D(const float radius, const int resolution)
   m->textureCoords = new Vector2[m->numVertices];
 
   const float deltaA = ((PI * 2) / resolution);
-  const float texEpsilon = 1.0f / (resolution + 2);
 
   // "Origin" vertex
   m->vertices[0] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
   m->colours[0] = Colour::White;
-  m->textureCoords[0] = Vector2(0, 0);
+  m->textureCoords[0] = Vector2(0.5f, 0.5f);
 
   for (int i = 1; i < resolution + 2; ++i)
   {
     const float a = i * deltaA;
-    const float u = i * texEpsilon;
 
     m->vertices[i] = Vector4(cos(a) * radius,
                              sin(a) * radius,
                              0.0f, 1.0f);
     m->colours[i] = Colour::White;
-    m->textureCoords[i] = Vector2(u, 0);
+    Vector2 v = Vector2(abs(cos(a)), abs(sin(a)));
+    m->textureCoords[i] = v;
   }
 
   return m;
