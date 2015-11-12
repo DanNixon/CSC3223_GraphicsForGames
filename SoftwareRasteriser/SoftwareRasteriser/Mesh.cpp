@@ -78,9 +78,11 @@ Mesh *Mesh::GeneratePoint(const Vector3 &from, const Colour &col)
   m->numVertices = 1;
   m->vertices = new Vector4[m->numVertices];
   m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
 
   m->vertices[0] = Vector4(from.x, from.y, from.z, 1.0f);
   m->colours[0] = Colour(col.r, col.g, col.b, col.a);
+  m->textureCoords[0] = Vector2(0.0f, 0.0f);
 
   return m;
 }
@@ -93,12 +95,15 @@ Mesh *Mesh::GenerateLine(const Vector3 &from, const Vector3 &to)
   m->numVertices = 2;
   m->vertices = new Vector4[m->numVertices];
   m->colours = new Colour[m->numVertices];
+  m->textureCoords = new Vector2[m->numVertices];
 
   m->vertices[0] = Vector4(from.x, from.y, from.z, 1.0f);
-  m->vertices[1] = Vector4(to.x, to.y, to.z, 1.0f);
-
   m->colours[0] = Colour(255, 0, 0, 255);
+  m->textureCoords[0] = Vector2(0.0f, 0.0f);
+
+  m->vertices[1] = Vector4(to.x, to.y, to.z, 1.0f);
   m->colours[1] = Colour(0, 0, 255, 255);
+  m->textureCoords[1] = Vector2(1.0f, 1.0f);
 
   return m;
 }
@@ -292,26 +297,26 @@ Mesh *Mesh::GenerateDisc2D(const float radius, const int resolution)
   Mesh *m = new Mesh();
   m->type = PRIMITIVE_TRIANGLE_FAN;
 
-  m->numVertices = resolution + 1;
+  m->numVertices = resolution + 2;
   m->vertices = new Vector4[m->numVertices];
   m->colours = new Colour[m->numVertices];
   m->textureCoords = new Vector2[m->numVertices];
 
-  const float deltaA = ((PI) / resolution);
-  const float texEpsilon = 1.0f / (resolution + 1);
+  const float deltaA = ((PI * 2) / resolution);
+  const float texEpsilon = 1.0f / (resolution + 2);
 
   // "Origin" vertex
   m->vertices[0] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
   m->colours[0] = Colour::White;
   m->textureCoords[0] = Vector2(0, 0);
 
-  for (int i = 1; i < resolution + 1; ++i)
+  for (int i = 1; i < resolution + 2; ++i)
   {
-    float a = i * deltaA;
-    float u = i * texEpsilon;
+    const float a = i * deltaA;
+    const float u = i * texEpsilon;
 
-    m->vertices[i] = Vector4(cos(a) * sin(a) * radius,
-                             sin(a) * sin(a) * radius,
+    m->vertices[i] = Vector4(cos(a) * radius,
+                             sin(a) * radius,
                              0.0f, 1.0f);
     m->colours[i] = Colour::White;
     m->textureCoords[i] = Vector2(u, 0);
@@ -320,17 +325,39 @@ Mesh *Mesh::GenerateDisc2D(const float radius, const int resolution)
   return m;
 }
 
-Mesh *Mesh::GenerateRing2D(const float radiusOuter, const float radiusInner)
+Mesh *Mesh::GenerateRing2D(const float radiusOuter, const float radiusInner, const int resolution)
 {
   Mesh *m = new Mesh();
   m->type = PRIMITIVE_TRIANGLE_STRIP;
 
-  m->numVertices = 0;
+  m->numVertices = (resolution + 2) * 2;
   m->vertices = new Vector4[m->numVertices];
   m->colours = new Colour[m->numVertices];
   m->textureCoords = new Vector2[m->numVertices];
 
-  //TODO
+  const float deltaA = ((PI * 2) / resolution);
+  const float texEpsilon = 1.0f / (resolution + 2);
+
+  int n = 0;
+  for (int i = 0; i < resolution + 2; i++)
+  {
+    const float a = i * deltaA;
+    const float u = i * texEpsilon;
+
+    m->vertices[n] = Vector4(cos(a) * radiusOuter,
+                             sin(a) * radiusOuter,
+                             0.0f, 1.0f);
+    m->colours[n] = Colour::White;
+    m->textureCoords[n] = Vector2(u, 0);
+    n++;
+
+    m->vertices[n] = Vector4(cos(a) * radiusInner,
+                             sin(a) * radiusInner,
+                             0.0f, 1.0f);
+    m->colours[n] = Colour::White;
+    m->textureCoords[n] = Vector2(u, 0);
+    n++;
+  }
 
   return m;
 }

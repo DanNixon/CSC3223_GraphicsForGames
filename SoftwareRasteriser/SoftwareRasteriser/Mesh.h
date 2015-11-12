@@ -52,7 +52,7 @@ public:
   static Mesh *GenerateTriangleFan();
   static Mesh *GenerateSphere(const float radius = 1.0f, const int resolution = 10, const Colour &c = Colour::White);
   static Mesh *GenerateDisc2D(const float radius = 1.0f, const int resolution = 10);
-  static Mesh *GenerateRing2D(const float radiusOuter = 1.0f, const float radiusInner = 0.8f);
+  static Mesh *GenerateRing2D(const float radiusOuter = 1.0f, const float radiusInner = 0.8f, const int resolution = 10);
 
   PrimitiveType GetType()
   {

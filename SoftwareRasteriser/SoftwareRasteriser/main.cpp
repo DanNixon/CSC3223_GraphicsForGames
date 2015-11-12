@@ -38,18 +38,26 @@ int main()
 
   // Planet (triangle fan)
   RenderObject * planet = new RenderObject();
-  planet->mesh = Mesh::GenerateDisc2D(15.0, 30);
+  planet->mesh = Mesh::GenerateDisc2D(8.0f, 30);
   planet->texture = Texture::TextureFromTGA("../planet.tga");
-  planet->modelMatrix = Matrix4::Translation(Vector3(-10.0f, -15.0f, -20.0f));
+  planet->modelMatrix = Matrix4::Translation(Vector3(-8.0f, -10.0f, -20.0f));
   drawables.push_back(planet);
   
+  // Planet asteroid belt (triangle strip)
+  RenderObject * asteroidBelt = new RenderObject();
+  asteroidBelt->mesh = Mesh::GenerateRing2D(12, 10, 20);
+  asteroidBelt->modelMatrix = Matrix4::Translation(Vector3(-8.0f, -10.0f, -20.0f)) * Matrix4::Rotation(90.0f, Vector3(1.0f, 0.0f, 0.0f));
+  drawables.push_back(asteroidBelt);
+
   // Spaceship (triangles with interpolated colours and semi-transparency on windows)
   RenderObject * spaceship = new RenderObject();
   spaceship->mesh = Mesh::LoadMeshFile("../spaceship.asciimesh");
-  spaceship->modelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -5.0f));
+  spaceship->modelMatrix = Matrix4::Scale(Vector3(0.5, 0.5, 0.5)) * Matrix4::Translation(Vector3(3.0f, 3.0f, -5.0f))
+                         * Matrix4::Rotation(25.0f, Vector3(1.0, 1.0, 0.0)) * Matrix4::Rotation(-70.0f, Vector3(0.0, 1.0, 0.0));
   drawables.push_back(spaceship);
 
-  //TODO: Motion
+  //TODO: Spaceship motion
+  //TODO: Interpolated colours in spaceship
   
   Matrix4 viewMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -10.0f));
   Matrix4 camRotation;
