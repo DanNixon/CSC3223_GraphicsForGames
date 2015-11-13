@@ -335,26 +335,24 @@ Mesh *Mesh::GenerateRing2D(const float radiusOuter, const float radiusInner, con
   m->textureCoords = new Vector2[m->numVertices];
 
   const float deltaA = ((PI * 2) / resolution);
-  const float texEpsilon = 1.0f / (resolution + 2);
 
   int n = 0;
   for (int i = 0; i < resolution + 2; i++)
   {
     const float a = i * deltaA;
-    const float u = i * texEpsilon;
 
     m->vertices[n] = Vector4(cos(a) * radiusOuter,
                              sin(a) * radiusOuter,
                              0.0f, 1.0f);
     m->colours[n] = Colour::White;
-    m->textureCoords[n] = Vector2(u, 0);
+    m->textureCoords[n] = Vector2(abs(cos(a)), abs(sin(a)));
     n++;
 
     m->vertices[n] = Vector4(cos(a) * radiusInner,
                              sin(a) * radiusInner,
                              0.0f, 1.0f);
     m->colours[n] = Colour::White;
-    m->textureCoords[n] = Vector2(u, 0);
+    m->textureCoords[n] = Vector2(abs(cos(a)), abs(sin(a)));
     n++;
   }
 
