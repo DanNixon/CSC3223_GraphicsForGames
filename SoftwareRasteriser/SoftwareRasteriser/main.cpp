@@ -144,8 +144,11 @@ void generateRandomStarfield(vector<RenderObject *> &out, const int num, const f
     const float y = ((float)((rand() % 100) - 50)) * xyFact;
     const float z = ((float)((rand() % 100) - 50)) * zFact;
 
-    // TODO: random colours
-    Colour c = Colour(0, 255, 255, 255);
+    // Generate random colour
+    const int r = (rand() % 100) + 155;
+    const int g = (rand() % 100) + 155;
+    const int b = (rand() % 100) + 155;
+    Colour c = Colour(r, g, b, 255);
 
     RenderObject *o = new RenderObject();
     o->mesh = Mesh::GeneratePoint(Vector3(), c);
