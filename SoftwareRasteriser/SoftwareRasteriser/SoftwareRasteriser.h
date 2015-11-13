@@ -40,8 +40,8 @@ enum TextureSampleMode
   SAMPLE_BILINEAR,
   SAMPLE_MIPMAP_NEAREST
 
-  //TODO
-  //SAMPLE_MIPMAP_BILINEAR
+  // TODO
+  // SAMPLE_MIPMAP_BILINEAR
 };
 
 struct BoundingBox
@@ -84,12 +84,13 @@ public:
       return false;
 
     int index = (y * screenWidth) + x;
-    unsigned int castVal = (unsigned int) depthValue;
+    unsigned int castVal = (unsigned int)depthValue;
     if (castVal > m_depthBuffer[index])
       return false;
 
     m_depthBuffer[index] = castVal;
-    return true;  }
+    return true;
+  }
 
   void SetTextureSamplingMode(TextureSampleMode mode)
   {
@@ -111,19 +112,13 @@ public:
     return m_blendState;
   }
 
-  bool CohenSutherlandLine(Vector4 &inA, Vector4 &inB,
-	  Colour &colA, Colour &colB,
-	  Vector3 &texA, Vector3 &texB);
+  bool CohenSutherlandLine(Vector4 &inA, Vector4 &inB, Colour &colA, Colour &colB, Vector3 &texA,
+                           Vector3 &texB);
 
-  void SutherlandHodgmanTri(
-	  Vector4 &v0, Vector4 &v1, Vector4 &v2,
-	  const Colour &c0 = Colour(),
-	  const Colour &c1 = Colour(),
-	  const Colour &c2 = Colour(),
-	  const Vector2 &t0 = Vector2(),
-	  const Vector2 &t1 = Vector2(),
-	  const Vector2 &t2 = Vector2()
-	  );
+  void SutherlandHodgmanTri(Vector4 &v0, Vector4 &v1, Vector4 &v2, const Colour &c0 = Colour(),
+                            const Colour &c1 = Colour(), const Colour &c2 = Colour(),
+                            const Vector2 &t0 = Vector2(), const Vector2 &t1 = Vector2(),
+                            const Vector2 &t2 = Vector2());
 
   float ClipEdge(const Vector4 &inA, const Vector4 &inB, int axis);
   int HomogeneousOutcode(const Vector4 &in);
@@ -131,8 +126,7 @@ public:
 protected:
   Colour *GetCurrentBuffer();
 
-  void CalculateWeights(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
-                        const Vector4 &p,
+  void CalculateWeights(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2, const Vector4 &p,
                         float &alpha, float &beta, float &gamma);
 
   void RasterisePointsMesh(RenderObject *o);
@@ -148,7 +142,8 @@ protected:
   void RasteriseLine(const Vector4 &v0, const Vector4 &v1,
                      const Colour &colA = Colour(255, 255, 255, 255),
                      const Colour &colB = Colour(255, 255, 255, 255),
-                     const Vector3 &texA = Vector3(0, 0, 0), const Vector3 &texB = Vector3(1, 1, 1));
+                     const Vector3 &texA = Vector3(0, 0, 0),
+                     const Vector3 &texB = Vector3(1, 1, 1));
 
   void RasteriseTri(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
                     const Colour &c0 = Colour(), const Colour &c1 = Colour(),
@@ -205,7 +200,7 @@ protected:
   }
 
   int m_currentDrawBuffer;
-  Texture * m_currentTexture;
+  Texture *m_currentTexture;
 
   Colour *m_buffers[2];
   unsigned short *m_depthBuffer;

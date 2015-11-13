@@ -19,7 +19,7 @@ Mesh::~Mesh(void)
   delete[] textureCoords;
 }
 
-Mesh * Mesh::LoadMeshFile(const string & filename)
+Mesh *Mesh::LoadMeshFile(const string &filename)
 {
   ifstream f(filename);
 
@@ -128,12 +128,12 @@ Mesh *Mesh::GenerateNSided2D(const int n)
     m->colours[i] = Colour(255, 255, 255, 255);
     m->textureCoords[i] = Vector2(x1, y1);
 
-    const float x2 = cos(p * (i+1));
-    const float y2 = sin(p * (i+1));
+    const float x2 = cos(p * (i + 1));
+    const float y2 = sin(p * (i + 1));
 
-    m->vertices[i+1] = Vector4(x2, y2, 0.0, 1.0f);
-    m->colours[i+1] = Colour(255, 255, 255, 255);
-    m->textureCoords[i+1] = Vector2(x2, y2);
+    m->vertices[i + 1] = Vector4(x2, y2, 0.0, 1.0f);
+    m->colours[i + 1] = Colour(255, 255, 255, 255);
+    m->textureCoords[i + 1] = Vector2(x2, y2);
   }
 
   return m;
@@ -264,18 +264,14 @@ Mesh *Mesh::GenerateSphere(const float radius, const int resolution, const Colou
 
       const float v = j * texEpsilon;
 
-      m->vertices[n] = Vector4(cos(theta1) * sin(phi) * radius,
-                               sin(theta1) * sin(phi) * radius,
-                               cos(phi) * radius,
-                               1.0f);
+      m->vertices[n] = Vector4(cos(theta1) * sin(phi) * radius, sin(theta1) * sin(phi) * radius,
+                               cos(phi) * radius, 1.0f);
       m->colours[n] = c;
       m->textureCoords[n] = Vector2(u1, v);
       n++;
 
-      m->vertices[n] = Vector4(cos(theta2) * sin(phi) * radius,
-                               sin(theta2) * sin(phi) * radius,
-                               cos(phi) * radius,
-                               1.0f);
+      m->vertices[n] = Vector4(cos(theta2) * sin(phi) * radius, sin(theta2) * sin(phi) * radius,
+                               cos(phi) * radius, 1.0f);
       m->colours[n] = c;
       m->textureCoords[n] = Vector2(u2, v);
       n++;
@@ -286,12 +282,12 @@ Mesh *Mesh::GenerateSphere(const float radius, const int resolution, const Colou
 }
 
 /**
-* Generates a 2D filled circle/disc.
-*
-* \param radius Radius (default 1.0)
-* \param resolution Number of "slices" in angle
-* \return New mesh
-*/
+ * Generates a 2D filled circle/disc.
+ *
+ * \param radius Radius (default 1.0)
+ * \param resolution Number of "slices" in angle
+ * \return New mesh
+ */
 Mesh *Mesh::GenerateDisc2D(const float radius, const int resolution)
 {
   Mesh *m = new Mesh();
@@ -313,9 +309,7 @@ Mesh *Mesh::GenerateDisc2D(const float radius, const int resolution)
   {
     const float a = i * deltaA;
 
-    m->vertices[i] = Vector4(cos(a) * radius,
-                             sin(a) * radius,
-                             0.0f, 1.0f);
+    m->vertices[i] = Vector4(cos(a) * radius, sin(a) * radius, 0.0f, 1.0f);
     m->colours[i] = Colour::White;
     Vector2 v = Vector2(abs(cos(a)), abs(sin(a)));
     m->textureCoords[i] = v;
@@ -324,6 +318,14 @@ Mesh *Mesh::GenerateDisc2D(const float radius, const int resolution)
   return m;
 }
 
+/**
+ * Generates a 2D ring.
+ *
+ * \param radiusOuter Outer radius
+ * \param radiusInner Inner radius
+ * \param resolution Number of "slices" in angle
+ * \return New mesh
+ */
 Mesh *Mesh::GenerateRing2D(const float radiusOuter, const float radiusInner, const int resolution)
 {
   Mesh *m = new Mesh();
@@ -341,16 +343,12 @@ Mesh *Mesh::GenerateRing2D(const float radiusOuter, const float radiusInner, con
   {
     const float a = i * deltaA;
 
-    m->vertices[n] = Vector4(cos(a) * radiusOuter,
-                             sin(a) * radiusOuter,
-                             0.0f, 1.0f);
+    m->vertices[n] = Vector4(cos(a) * radiusOuter, sin(a) * radiusOuter, 0.0f, 1.0f);
     m->colours[n] = Colour::White;
     m->textureCoords[n] = Vector2(abs(cos(a)), abs(sin(a)));
     n++;
 
-    m->vertices[n] = Vector4(cos(a) * radiusInner,
-                             sin(a) * radiusInner,
-                             0.0f, 1.0f);
+    m->vertices[n] = Vector4(cos(a) * radiusInner, sin(a) * radiusInner, 0.0f, 1.0f);
     m->colours[n] = Colour::White;
     m->textureCoords[n] = Vector2(abs(cos(a)), abs(sin(a)));
     n++;

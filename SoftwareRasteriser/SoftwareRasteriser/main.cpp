@@ -3,8 +3,10 @@
 #include "Mesh.h"
 #include "Texture.h"
 
-void generateRandomStarfield(vector<RenderObject *> &out, const int num = 100, const float xyFact = 1.0f, const float zFact = 1.0f);
-void generateRandomAsteroids(vector<RenderObject *> &out, const int num = 100, const float xyFact = 1.0f, const float zFact = 1.0f);
+void generateRandomStarfield(vector<RenderObject *> &out, const int num = 100,
+                             const float xyFact = 1.0f, const float zFact = 1.0f);
+void generateRandomAsteroids(vector<RenderObject *> &out, const int num = 100,
+                             const float xyFact = 1.0f, const float zFact = 1.0f);
 void generateAsteroid2D(vector<RenderObject *> &out, const Vector3 &position, const float scale);
 
 int main()
@@ -13,13 +15,13 @@ int main()
   const int screenY = 600;
   SoftwareRasteriser r(screenX, screenY);
 
-  const float aspect = (float) screenX / (float) screenY;
+  const float aspect = (float)screenX / (float)screenY;
   r.SetProjectionMatrix(Matrix4::Perspective(0.1f, 100.0f, aspect, 45.0f));
   r.SetTextureSamplingMode(SAMPLE_BILINEAR);
   r.SetBlendMode(BLEND_ALPHA);
 
   vector<RenderObject *> drawables;
-  
+
   // Generate star field (random point primitives)
   generateRandomStarfield(drawables, 10000);
 
@@ -28,37 +30,40 @@ int main()
 
   // Generate more asteroids closer to scene (random line primitive shapes)
   generateRandomAsteroids(drawables, 50, 0.5);
-  
+
   // Blue moon (textured sphere)
-  RenderObject * moon = new RenderObject();
+  RenderObject *moon = new RenderObject();
   moon->mesh = Mesh::GenerateSphere(3.0f, 20, Colour(255, 0, 0, 255));
   moon->texture = Texture::TextureFromTGA("../moon.tga");
   moon->modelMatrix = Matrix4::Translation(Vector3(-2.0f, -3.0f, -10.0f));
   drawables.push_back(moon);
 
   // Planet (triangle fan)
-  RenderObject * planet = new RenderObject();
+  RenderObject *planet = new RenderObject();
   planet->mesh = Mesh::GenerateDisc2D(8.0f, 30);
   planet->texture = Texture::TextureFromTGA("../planet.tga");
   planet->modelMatrix = Matrix4::Translation(Vector3(-8.0f, -10.0f, -20.0f));
   drawables.push_back(planet);
-  
+
   // Planet asteroid belt (triangle strip)
-  RenderObject * asteroidBelt = new RenderObject();
+  RenderObject *asteroidBelt = new RenderObject();
   asteroidBelt->mesh = Mesh::GenerateRing2D(12, 10, 20);
   asteroidBelt->texture = Texture::TextureFromTGA("../asteroid_belt.tga");
-  asteroidBelt->modelMatrix = Matrix4::Translation(Vector3(-8.0f, -10.0f, -20.0f)) * Matrix4::Rotation(90.0f, Vector3(1.0f, 0.0f, 0.0f));
+  asteroidBelt->modelMatrix = Matrix4::Translation(Vector3(-8.0f, -10.0f, -20.0f)) *
+                              Matrix4::Rotation(90.0f, Vector3(1.0f, 0.0f, 0.0f));
   drawables.push_back(asteroidBelt);
 
   // Spaceship (triangles with interpolated colours and semi-transparency on windows)
-  RenderObject * spaceship = new RenderObject();
+  RenderObject *spaceship = new RenderObject();
   spaceship->mesh = Mesh::LoadMeshFile("../spaceship.asciimesh");
-  spaceship->modelMatrix = Matrix4::Scale(Vector3(0.5, 0.5, 0.5)) * Matrix4::Translation(Vector3(3.0f, 3.0f, -0.0f))
-                         * Matrix4::Rotation(25.0f, Vector3(1.0, 1.0, 0.0)) * Matrix4::Rotation(-70.0f, Vector3(0.0, 1.0, 0.0));
+  spaceship->modelMatrix = Matrix4::Scale(Vector3(0.5, 0.5, 0.5)) *
+                           Matrix4::Translation(Vector3(3.0f, 3.0f, -0.0f)) *
+                           Matrix4::Rotation(25.0f, Vector3(1.0, 1.0, 0.0)) *
+                           Matrix4::Rotation(-70.0f, Vector3(0.0, 1.0, 0.0));
   drawables.push_back(spaceship);
 
-  //TODO: Spaceship motion
-  
+  // TODO: Spaceship motion
+
   Matrix4 viewMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, -10.0f));
   Matrix4 camRotation;
 
@@ -102,9 +107,8 @@ int main()
 
     // Handle camera/POV rotation
     const Vector2 mouseRelPos = Mouse::GetRelativePosition();
-    camRotation = camRotation
-                * Matrix4::Rotation(mouseRelPos.x, Vector3(0.0f, 1.0f, 0.0f))
-                * Matrix4::Rotation(mouseRelPos.y, Vector3(1.0f, 0.0f, 0.0f));
+    camRotation = camRotation * Matrix4::Rotation(mouseRelPos.x, Vector3(0.0f, 1.0f, 0.0f)) *
+                  Matrix4::Rotation(mouseRelPos.y, Vector3(1.0f, 0.0f, 0.0f));
 
     r.SetViewMatrix(viewMatrix * camRotation);
 
@@ -119,7 +123,7 @@ int main()
 
   // Remove all drawables, memory is freed in the RenderObject destructor
   drawables.clear();
-  
+
   return 0;
 }
 
@@ -131,18 +135,19 @@ int main()
  * \param xyFact Span in X and Y axis
  * \param zFact Span in Z axis
  */
-void generateRandomStarfield(vector<RenderObject *> &out, const int num, const float xyFact, const float zFact)
+void generateRandomStarfield(vector<RenderObject *> &out, const int num, const float xyFact,
+                             const float zFact)
 {
   for (int i = 0; i < num; ++i)
   {
-    const float x = ((float) ((rand() % 100) - 50)) * xyFact;
-    const float y = ((float) ((rand() % 100) - 50)) * xyFact;
-    const float z = ((float) ((rand() % 100) - 50)) * zFact;
+    const float x = ((float)((rand() % 100) - 50)) * xyFact;
+    const float y = ((float)((rand() % 100) - 50)) * xyFact;
+    const float z = ((float)((rand() % 100) - 50)) * zFact;
 
-    //TODO: random colours
+    // TODO: random colours
     Colour c = Colour(0, 255, 255, 255);
 
-    RenderObject * o = new RenderObject();
+    RenderObject *o = new RenderObject();
     o->mesh = Mesh::GeneratePoint(Vector3(), c);
     o->modelMatrix = Matrix4::Translation(Vector3(x, y, z));
     out.push_back(o);
@@ -157,7 +162,8 @@ void generateRandomStarfield(vector<RenderObject *> &out, const int num, const f
  * \param xyFact Span in X and Y axis
  * \param zFact Span in Z axis
  */
-void generateRandomAsteroids(vector<RenderObject *> &out, const int num, const float xyFact, const float zFact)
+void generateRandomAsteroids(vector<RenderObject *> &out, const int num, const float xyFact,
+                             const float zFact)
 {
   for (int i = 0; i < num; ++i)
   {
@@ -165,8 +171,6 @@ void generateRandomAsteroids(vector<RenderObject *> &out, const int num, const f
     const float y = ((float)((rand() % 100) - 50)) * xyFact;
     const float z = ((float)((rand() % 100) - 50)) * zFact;
     const float scale = ((float)(rand() % 100)) / 100.0f;
-
-    //TODO: random colours/textures
 
     generateAsteroid2D(out, Vector3(x, y, z), scale);
   }
@@ -181,18 +185,20 @@ void generateRandomAsteroids(vector<RenderObject *> &out, const int num, const f
  */
 void generateAsteroid2D(vector<RenderObject *> &out, const Vector3 &position, const float scale)
 {
-  const Matrix4 modelMat = Matrix4::Translation(position) * Matrix4::Scale(Vector3(scale, scale, scale));
+  const Matrix4 modelMat =
+      Matrix4::Translation(position) * Matrix4::Scale(Vector3(scale, scale, scale));
 
   // Random rotation between 160 - 200
   const float rot = (float)((rand() % 40) + 160);
 
-  RenderObject * o1 = new RenderObject();
+  RenderObject *o1 = new RenderObject();
   o1->mesh = Mesh::GenerateNSided2D(5);
   o1->modelMatrix = modelMat;
 
-  RenderObject * o2 = new RenderObject();
+  RenderObject *o2 = new RenderObject();
   o2->mesh = Mesh::GenerateNSided2D(7);
-  o2->modelMatrix = modelMat * Matrix4::Scale(Vector3(0.85f, 0.85f, 0.85f)) * Matrix4::Rotation(rot, Vector3(0.0f, 0.0f, 1.0f));
+  o2->modelMatrix = modelMat * Matrix4::Scale(Vector3(0.85f, 0.85f, 0.85f)) *
+                    Matrix4::Rotation(rot, Vector3(0.0f, 0.0f, 1.0f));
 
   out.push_back(o1);
   out.push_back(o2);

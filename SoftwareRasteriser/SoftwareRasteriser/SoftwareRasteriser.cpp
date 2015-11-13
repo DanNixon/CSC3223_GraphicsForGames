@@ -173,12 +173,11 @@ void SoftwareRasteriser::DrawObject(RenderObject *o)
 }
 
 void SoftwareRasteriser::CalculateWeights(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2,
-  const Vector4 &p,
-  float &alpha, float &beta, float &gamma)
+                                          const Vector4 &p, float &alpha, float &beta, float &gamma)
 {
   const float triArea = ScreenAreaOfTri(v0, v1, v2);
   const float areaRecip = 1.0f / triArea;
-  
+
   float subTriArea[3];
   subTriArea[0] = abs(ScreenAreaOfTri(v0, p, v1));
   subTriArea[1] = abs(ScreenAreaOfTri(v1, p, v2));
@@ -189,9 +188,8 @@ void SoftwareRasteriser::CalculateWeights(const Vector4 &v0, const Vector4 &v1, 
   gamma = subTriArea[0] * areaRecip;
 }
 
-bool SoftwareRasteriser::CohenSutherlandLine(Vector4 &inA, Vector4 &inB,
-	Colour &colA, Colour &colB,
-	Vector3 &texA, Vector3 &texB)
+bool SoftwareRasteriser::CohenSutherlandLine(Vector4 &inA, Vector4 &inB, Colour &colA, Colour &colB,
+                                             Vector3 &texA, Vector3 &texB)
 {
   for (int i = 0; i < 6; ++i)
   {
@@ -223,62 +221,56 @@ bool SoftwareRasteriser::CohenSutherlandLine(Vector4 &inA, Vector4 &inB,
   return true;
 }
 
-void SoftwareRasteriser::SutherlandHodgmanTri(
-	Vector4 &v0,
-  Vector4 &v1,
-  Vector4 &v2,
-	const Colour &c0,
-	const Colour &c1,
-	const Colour &c2,
-	const Vector2 &t0,
-	const Vector2 &t1,
-	const Vector2 &t2
-	)
+void SoftwareRasteriser::SutherlandHodgmanTri(Vector4 &v0, Vector4 &v1, Vector4 &v2,
+                                              const Colour &c0, const Colour &c1, const Colour &c2,
+                                              const Vector2 &t0, const Vector2 &t1,
+                                              const Vector2 &t2)
 {
   Vector4 posIn[MAX_VERTS];
   Colour colIn[MAX_VERTS];
   Vector3 texIn[MAX_VERTS];
-  
+
   Vector4 posOut[MAX_VERTS];
   Colour colOut[MAX_VERTS];
-  Vector3 texOut[MAX_VERTS];
+  Vector3 texOut[MAX_VERTS];
   posIn[0] = v0;
   posIn[1] = v1;
   posIn[2] = v2;
-  
+
   colIn[0] = c0;
   colIn[1] = c1;
   colIn[2] = c2;
-  
+
   texIn[0] = Vector3(t0.x, t0.y, 1);
   texIn[1] = Vector3(t1.x, t1.y, 1);
   texIn[2] = Vector3(t2.x, t2.y, 1);
-  
+
   int inSize = 3;
 
-  for (int i = 0; i <= 6; i++) {
+  for (int i = 0; i <= 6; i++)
+  {
     int planeCode = 1 << i;
     Vector4 prevPos = posIn[inSize - 1];
     Colour prevCol = colIn[inSize - 1];
     Vector3 prevTex = texIn[inSize - 1];
-    
+
     int outSize = 0;
-    
+
     for (int j = 0; j < inSize; ++j)
     {
       int outsideA = HomogeneousOutcode(posIn[j]) & planeCode;
       int outsideB = HomogeneousOutcode(prevPos) & planeCode;
-      
+
       if (outsideA ^ outsideB)
       {
         float clipRatio = ClipEdge(posIn[j], prevPos, planeCode);
-        
+
         colOut[outSize] = Colour::Lerp(colIn[j], prevCol, clipRatio);
         texOut[outSize] = Vector3::Lerp(texIn[j], prevTex, clipRatio);
         posOut[outSize] = Vector4::Lerp(posIn[j], prevPos, clipRatio);
         outSize++;
       }
-      
+
       if (!outsideA)
       {
         posOut[outSize] = posIn[j];
@@ -310,11 +302,8 @@ void SoftwareRasteriser::SutherlandHodgmanTri(
 
   for (int i = 2; i < inSize; ++i)
   {
-    RasteriseTri(
-      posIn[0], posIn[i - 1], posIn[i],
-      colIn[0], colIn[i - 1], colIn[i],
-      texIn[0], texIn[i - 1], texIn[i]
-      );
+    RasteriseTri(posIn[0], posIn[i - 1], posIn[i], colIn[0], colIn[i - 1], colIn[i], texIn[0],
+                 texIn[i - 1], texIn[i]);
   }
 }
 
@@ -428,14 +417,13 @@ void SoftwareRasteriser::RasteriseLine(const Vector4 &v0, const Vector4 &v1, con
     }
     else
     {
-      Vector3 subTex = texA *(i * reciprocalRange) +
-                       texB *(1.0f - (i * reciprocalRange));
+      Vector3 subTex = texA * (i * reciprocalRange) + texB * (1.0f - (i * reciprocalRange));
       subTex.x /= subTex.z;
       subTex.y /= subTex.z;
-      c = m_currentTexture->ColourAtPoint((int) subTex.x, (int) subTex.y);
+      c = m_currentTexture->ColourAtPoint((int)subTex.x, (int)subTex.y);
     }
 
-    if (DepthFunc((int) x, (int) y, zVal))
+    if (DepthFunc((int)x, (int)y, zVal))
       BlendPixel(x, y, c);
 
     error += absSlope;
@@ -483,18 +471,16 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
         continue;
 
       // Check if tringle is very small
-      //if (triSum < 1.0f)
-        //continue;
+      // if (triSum < 1.0f)
+      // continue;
 
       const float alpha = subTriArea[1] * areaRecip;
       const float beta = subTriArea[2] * areaRecip;
       const float gamma = subTriArea[0] * areaRecip;
 
-      float zVal = (v0p.z * alpha) +
-                   (v1p.z * beta) +
-                   (v2p.z * gamma);
+      float zVal = (v0p.z * alpha) + (v1p.z * beta) + (v2p.z * gamma);
 
-      if (!DepthFunc((int) x, (int) y, zVal))
+      if (!DepthFunc((int)x, (int)y, zVal))
         continue;
 
       // Pixel is in triangle, so shade it
@@ -512,26 +498,26 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
         case SAMPLE_MIPMAP_NEAREST:
         {
           float xAlpha, xBeta, xGamma, yAlpha, yBeta, yGamma;
-          
+
           CalculateWeights(v0p, v1p, v2p, screenPos + Vector4(1, 0, 0, 0), xAlpha, xBeta, xGamma);
           CalculateWeights(v0p, v1p, v2p, screenPos + Vector4(0, 1, 0, 0), yAlpha, yBeta, yGamma);
-          
+
           Vector3 xDerivs = (t0 * xAlpha) + (t1 * xBeta) + (t2 * xGamma);
           Vector3 yDerivs = (t0 * yAlpha) + (t1 * yBeta) + (t2 * yGamma);
-          
+
           xDerivs.x /= xDerivs.z;
           xDerivs.y /= xDerivs.z;
 
           yDerivs.x /= yDerivs.z;
           yDerivs.y /= yDerivs.z;
-          
+
           xDerivs = xDerivs - subTex;
           yDerivs = yDerivs - subTex;
 
           const float maxU = max(abs(xDerivs.x), abs(yDerivs.y));
           const float maxV = max(abs(xDerivs.y), abs(yDerivs.y));
           const float maxChange = abs(max(maxU, maxV));
-          const int lambda = (int) (abs(log(maxChange) / log(2.0)));
+          const int lambda = (int)(abs(log(maxChange) / log(2.0)));
 
           BlendPixel((int)x, (int)y, m_currentTexture->NearestTexSample(subTex, lambda));
           break;
@@ -648,12 +634,9 @@ void SoftwareRasteriser::RasteriseLinesMesh(RenderObject *o)
     Colour c0 = o->GetMesh()->colours[0];
     Colour c1 = o->GetMesh()->colours[1];
 
-    Vector3 t0 = Vector3(
-      o->GetMesh()->textureCoords[i].x,
-      o->GetMesh()->textureCoords[i].y, 1.0f);
-    Vector3 t1 = Vector3(
-      o->GetMesh()->textureCoords[i + 1].x,
-      o->GetMesh()->textureCoords[i + 1].y, 1.0f);
+    Vector3 t0 = Vector3(o->GetMesh()->textureCoords[i].x, o->GetMesh()->textureCoords[i].y, 1.0f);
+    Vector3 t1 =
+        Vector3(o->GetMesh()->textureCoords[i + 1].x, o->GetMesh()->textureCoords[i + 1].y, 1.0f);
 
     if (!CohenSutherlandLine(v0, v1, c0, c1, t0, t1))
       continue;
@@ -662,7 +645,7 @@ void SoftwareRasteriser::RasteriseLinesMesh(RenderObject *o)
     t1.z = 1.0f;
 
     t0 /= v0.w;
-    t1 /= v1.w;
+    t1 /= v1.w;
     v0.SelfDivisionByW();
     v1.SelfDivisionByW();
 
@@ -673,7 +656,7 @@ void SoftwareRasteriser::RasteriseLinesMesh(RenderObject *o)
 void SoftwareRasteriser::RasteriseTriMesh(RenderObject *o)
 {
   Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
-  Mesh * m = o->GetMesh();
+  Mesh *m = o->GetMesh();
 
   for (uint i = 0; i < o->GetMesh()->numVertices; i += 3)
   {
@@ -681,39 +664,35 @@ void SoftwareRasteriser::RasteriseTriMesh(RenderObject *o)
     Vector4 v1 = mvp * m->vertices[i + 1];
     Vector4 v2 = mvp * m->vertices[i + 2];
 
-    SutherlandHodgmanTri(v0, v1, v2,
-      m->colours[i], m->colours[i + 1], m->colours[i + 2],
-      m->textureCoords[i], m->textureCoords[i + 1],
-      m->textureCoords[i + 2]);
+    SutherlandHodgmanTri(v0, v1, v2, m->colours[i], m->colours[i + 1], m->colours[i + 2],
+                         m->textureCoords[i], m->textureCoords[i + 1], m->textureCoords[i + 2]);
   }
 }
 
 void SoftwareRasteriser::RasteriseTriMeshStrip(RenderObject *o)
 {
   Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
-  Mesh * m = o->GetMesh();
+  Mesh *m = o->GetMesh();
 
   for (uint i = 0; i < o->GetMesh()->numVertices - 2; ++i)
   {
     Vector4 vv0 = m->vertices[i];
-    Vector4 vv1 = m->vertices[i+1];
-    Vector4 vv2 = m->vertices[i+2];
+    Vector4 vv1 = m->vertices[i + 1];
+    Vector4 vv2 = m->vertices[i + 2];
 
     Vector4 v0 = mvp * m->vertices[i];
     Vector4 v1 = mvp * m->vertices[i + 1];
     Vector4 v2 = mvp * m->vertices[i + 2];
 
-    SutherlandHodgmanTri(v0, v1, v2,
-      m->colours[i], m->colours[i + 1], m->colours[i + 2],
-      m->textureCoords[i], m->textureCoords[i + 1],
-      m->textureCoords[i + 2]);
+    SutherlandHodgmanTri(v0, v1, v2, m->colours[i], m->colours[i + 1], m->colours[i + 2],
+                         m->textureCoords[i], m->textureCoords[i + 1], m->textureCoords[i + 2]);
   }
 }
 
 void SoftwareRasteriser::RasteriseTriMeshFan(RenderObject *o)
 {
   Matrix4 mvp = m_viewProjMatrix * o->GetModelMatrix();
-  Mesh * m = o->GetMesh();
+  Mesh *m = o->GetMesh();
   Vector4 v0 = mvp * m->vertices[0];
 
   for (uint i = 1; i < o->GetMesh()->numVertices - 1; ++i)
@@ -721,10 +700,8 @@ void SoftwareRasteriser::RasteriseTriMeshFan(RenderObject *o)
     Vector4 v1 = mvp * m->vertices[i];
     Vector4 v2 = mvp * m->vertices[i + 1];
 
-    SutherlandHodgmanTri(v0, v1, v2,
-      m->colours[0], m->colours[i], m->colours[i + 1],
-      m->textureCoords[0], m->textureCoords[i],
-      m->textureCoords[i + 1]);
+    SutherlandHodgmanTri(v0, v1, v2, m->colours[0], m->colours[i], m->colours[i + 1],
+                         m->textureCoords[0], m->textureCoords[i], m->textureCoords[i + 1]);
   }
 }
 
