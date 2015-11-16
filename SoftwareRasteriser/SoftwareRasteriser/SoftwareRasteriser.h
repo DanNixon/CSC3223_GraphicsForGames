@@ -39,9 +39,6 @@ enum TextureSampleMode
   SAMPLE_NEAREST,
   SAMPLE_BILINEAR,
   SAMPLE_MIPMAP_NEAREST
-
-  // TODO
-  // SAMPLE_MIPMAP_BILINEAR
 };
 
 struct BoundingBox
