@@ -57,7 +57,7 @@ int main()
   RenderObject *spaceship = new RenderObject();
   spaceship->mesh = Mesh::LoadMeshFile("../spaceship.asciimesh");
   spaceship->modelMatrix = Matrix4::Scale(Vector3(0.5, 0.5, 0.5)) *
-                           Matrix4::Translation(Vector3(5.0f, 5.0f, -2.0f)) *
+                           Matrix4::Translation(Vector3(2.0f, 2.0f, -2.0f)) *
                            Matrix4::Rotation(40.0f, Vector3(1.0, 1.0, 0.0)) *
                            Matrix4::Rotation(-100.0f, Vector3(0.0, 1.0, 0.0));
   drawables.push_back(spaceship);
@@ -110,8 +110,11 @@ int main()
 
     r.SetViewMatrix(viewMatrix * camRotation);
 
-    // Move the space ship forwards (+Z relative to its self)
-    spaceship->modelMatrix = spaceship->modelMatrix * Matrix4::Translation(Vector3(0.0f, 0.0f, 0.05f));
+    // Move the space ship forwards (+Z relative to its self) and rotate it about Y axis
+	// (make it fly in a circle)
+    spaceship->modelMatrix = spaceship->modelMatrix *
+							 Matrix4::Rotation(0.5f, Vector3(0.0f, 1.0f, 0.0f)) *
+							 Matrix4::Translation(Vector3(0.0f, 0.0f, 0.05f));
 
     r.ClearBuffers();
 
