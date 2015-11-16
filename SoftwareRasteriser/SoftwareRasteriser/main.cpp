@@ -111,7 +111,7 @@ int main()
     r.SetViewMatrix(viewMatrix * camRotation);
 
     // Move the space ship forwards (+Z relative to its self) and rotate it about Y axis
-	// (make it fly in a circle)
+    // (make it fly in a circle)
     spaceship->modelMatrix = spaceship->modelMatrix *
 							 Matrix4::Rotation(0.5f, Vector3(0.0f, 1.0f, 0.0f)) *
 							 Matrix4::Translation(Vector3(0.0f, 0.0f, 0.05f));
