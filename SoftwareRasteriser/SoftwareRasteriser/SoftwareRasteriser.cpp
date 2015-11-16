@@ -471,8 +471,8 @@ void SoftwareRasteriser::RasteriseTri(const Vector4 &v0, const Vector4 &v1, cons
         continue;
 
       // Check if tringle is very small
-      // if (triSum < 1.0f)
-      // continue;
+      if (triSum < 1.0f)
+        continue;
 
       const float alpha = subTriArea[1] * areaRecip;
       const float beta = subTriArea[2] * areaRecip;
