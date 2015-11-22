@@ -2,19 +2,19 @@
 Class:Mesh
 Implements:
 Author:Rich Davison	<richard.davison4@newcastle.ac.uk>
-Description:Wrapper around OpenGL primitives, geometry and related 
+Description:Wrapper around OpenGL primitives, geometry and related
 OGL functions.
 
 There's a couple of extra functions in here that you didn't get in the tutorial
-series, to draw debug normals and tangents. 
+series, to draw debug normals and tangents.
 
 
--_-_-_-_-_-_-_,------,   
+-_-_-_-_-_-_-_,------,
 _-_-_-_-_-_-_-|   /\_/\   NYANYANYAN
 -_-_-_-_-_-_-~|__( ^ .^) /
-_-_-_-_-_-_-_-""  ""   
+_-_-_-_-_-_-_-""  ""
 
-*//////////////////////////////////////////////////////////////////////////////
+*/ /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
@@ -26,57 +26,58 @@ _-_-_-_-_-_-_-""  ""
 using std::ifstream;
 using std::string;
 
-//A handy enumerator, to determine which member of the bufferObject array
-//holds which data
-enum MeshBuffer {
-	VERTEX_BUFFER	=0,
-	COLOUR_BUFFER	=1, 
-	TEXTURE_BUFFER	,
-	NORMAL_BUFFER	, 
-	TANGENT_BUFFER	,
-	INDEX_BUFFER	,
-	MAX_BUFFER
+// A handy enumerator, to determine which member of the bufferObject array
+// holds which data
+enum MeshBuffer
+{
+  VERTEX_BUFFER = 0,
+  COLOUR_BUFFER = 1,
+  TEXTURE_BUFFER,
+  NORMAL_BUFFER,
+  TANGENT_BUFFER,
+  INDEX_BUFFER,
+  MAX_BUFFER
 };
 
-class Mesh	{
+class Mesh
+{
 public:
-	friend class MD5Mesh;
-	Mesh(void);
-	virtual ~Mesh(void);
+  friend class MD5Mesh;
+  Mesh(void);
+  virtual ~Mesh(void);
 
-	virtual void Draw();
+  virtual void Draw();
 
-	//Generates a single triangle, with RGB colours
-	static Mesh*	GenerateTriangle();
-	static Mesh*	LoadMeshFile(const string &filename);
+  // Generates a single triangle, with RGB colours
+  static Mesh *GenerateTriangle();
+  static Mesh *LoadMeshFile(const string &filename);
 
-	GLuint	type;	//Primitive type for this mesh (GL_TRIANGLES...etc)
+  GLuint type; // Primitive type for this mesh (GL_TRIANGLES...etc)
 
 protected:
-	//Buffers all VBO data into graphics memory. Required before drawing!
-	void	BufferData();
+  // Buffers all VBO data into graphics memory. Required before drawing!
+  void BufferData();
 
-	//VAO for this mesh
-	GLuint	arrayObject;
-	//VBOs for this mesh
-	GLuint	bufferObject[MAX_BUFFER];
-	//Number of vertices for this mesh
-	GLuint	numVertices;
+  // VAO for this mesh
+  GLuint arrayObject;
+  // VBOs for this mesh
+  GLuint bufferObject[MAX_BUFFER];
+  // Number of vertices for this mesh
+  GLuint numVertices;
 
-	//Number of indices for this mesh
-	GLuint			numIndices;
+  // Number of indices for this mesh
+  GLuint numIndices;
 
-	//Pointer to vertex position attribute data (badly named...?)
-	Vector3*		vertices;
-	//Pointer to vertex colour attribute data
-	Vector4*		colours;
-	//Pointer to vertex texture coordinate attribute data
-	Vector2*		textureCoords;
-	//Pointer to vertex normals attribute data
-	Vector3*		normals;
-	//Pointer to vertex tangents attribute data
-	Vector3*		tangents;
-	//Pointer to vertex indices attribute data
-	unsigned int*	indices;
+  // Pointer to vertex position attribute data (badly named...?)
+  Vector3 *vertices;
+  // Pointer to vertex colour attribute data
+  Vector4 *colours;
+  // Pointer to vertex texture coordinate attribute data
+  Vector2 *textureCoords;
+  // Pointer to vertex normals attribute data
+  Vector3 *normals;
+  // Pointer to vertex tangents attribute data
+  Vector3 *tangents;
+  // Pointer to vertex indices attribute data
+  unsigned int *indices;
 };
-

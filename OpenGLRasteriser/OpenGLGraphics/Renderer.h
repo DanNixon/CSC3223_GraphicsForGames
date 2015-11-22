@@ -7,23 +7,23 @@
 
 using std::vector;
 
-class Renderer : public OGLRenderer	{
+class Renderer : public OGLRenderer
+{
 public:
-	Renderer(Window &parent);
-	~Renderer(void);
+  Renderer(Window &parent);
+  ~Renderer(void);
 
-	virtual void	RenderScene();
+  virtual void RenderScene();
 
-	virtual void	Render(const RenderObject &o);
+  virtual void Render(const RenderObject &o);
 
-	virtual void	UpdateScene(float msec);
+  virtual void UpdateScene(float msec);
 
-	void	AddRenderObject(RenderObject &r) {
-		renderObjects.push_back(&r);
-	}
+  void AddRenderObject(RenderObject &r)
+  {
+    renderObjects.push_back(&r);
+  }
 
 protected:
-
-	vector<RenderObject*> renderObjects;
+  vector<RenderObject *> renderObjects;
 };
-

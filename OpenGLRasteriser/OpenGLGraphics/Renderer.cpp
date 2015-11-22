@@ -1,39 +1,50 @@
 #include "Renderer.h"
 
-Renderer::Renderer(Window &parent) : OGLRenderer(parent)	{
-	glEnable(GL_DEPTH_TEST);
+Renderer::Renderer(Window &parent)
+    : OGLRenderer(parent)
+{
+  glEnable(GL_DEPTH_TEST);
 }
 
-Renderer::~Renderer(void)	{
+Renderer::~Renderer(void)
+{
   renderObjects.clear();
 }
 
-void	Renderer::RenderScene() {
-	for(vector<RenderObject*>::iterator i = renderObjects.begin(); i != renderObjects.end(); ++i ) {
-		Render(*(*i));
-	}
+void Renderer::RenderScene()
+{
+  for (vector<RenderObject *>::iterator i = renderObjects.begin(); i != renderObjects.end(); ++i)
+  {
+    Render(*(*i));
+  }
 }
 
-void	Renderer::Render(const RenderObject &o) {
-	modelMatrix = o.GetWorldTransform();
+void Renderer::Render(const RenderObject &o)
+{
+  modelMatrix = o.GetWorldTransform();
 
-	if(o.GetShader() && o.GetMesh()) {
-		GLuint program = o.GetShader()->GetShaderProgram();
-		
-		glUseProgram(program);
+  if (o.GetShader() && o.GetMesh())
+  {
+    GLuint program = o.GetShader()->GetShaderProgram();
 
-		UpdateShaderMatrices(program);
+    glUseProgram(program);
 
-		o.Draw();
-	}
+    UpdateShaderMatrices(program);
 
-	for(vector<RenderObject*>::const_iterator i = o.GetChildren().begin(); i != o.GetChildren().end(); ++i ) {
-		Render(*(*i));
-	}
+    o.Draw();
+  }
+
+  for (vector<RenderObject *>::const_iterator i = o.GetChildren().begin();
+       i != o.GetChildren().end(); ++i)
+  {
+    Render(*(*i));
+  }
 }
 
-void	Renderer::UpdateScene(float msec) {
-	for(vector<RenderObject*>::iterator i = renderObjects.begin(); i != renderObjects.end(); ++i ) {
-		(*i)->Update(msec);
-	}
+void Renderer::UpdateScene(float msec)
+{
+  for (vector<RenderObject *>::iterator i = renderObjects.begin(); i != renderObjects.end(); ++i)
+  {
+    (*i)->Update(msec);
+  }
 }
