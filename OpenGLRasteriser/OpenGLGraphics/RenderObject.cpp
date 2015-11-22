@@ -1,6 +1,5 @@
 #include "RenderObject.h"
 
-
 RenderObject::RenderObject(void)	{
 	mesh	= NULL;
 	shader	= NULL;
@@ -15,11 +14,17 @@ RenderObject::RenderObject(Mesh*m, Shader*s, GLuint t) {
 	parent  = NULL;
 }
 
-
 RenderObject::~RenderObject(void)
 {
-}
+  if (mesh != NULL)
+    delete mesh;
 
+  if (shader != NULL)
+    delete shader;
+
+  if (parent != NULL)
+    delete parent;
+}
 
 void RenderObject::Update(float msec) {
 	if(parent) {

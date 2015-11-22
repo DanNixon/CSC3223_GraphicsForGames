@@ -1,12 +1,11 @@
 #include "Renderer.h"
 
 Renderer::Renderer(Window &parent) : OGLRenderer(parent)	{
-
 	glEnable(GL_DEPTH_TEST);
 }
 
 Renderer::~Renderer(void)	{
-	 
+  renderObjects.clear();
 }
 
 void	Renderer::RenderScene() {
