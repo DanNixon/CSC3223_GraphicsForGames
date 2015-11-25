@@ -1,4 +1,4 @@
-#version 150 core
+#version 330 core
 
 in Vertex	{
 	vec2 texCoord;

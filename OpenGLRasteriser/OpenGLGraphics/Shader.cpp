@@ -39,9 +39,9 @@ const string defaultFragment = "#version 150 core\n"
                                "	vec2 texCoord;"
                                "	vec4 colour;"
                                "} IN;"
-                               "out vec4 gl_FragColor;"
+                               "out vec4 fragColor;"
                                "void main(void)	{"
-                               "	gl_FragColor = vec4(1,0,1,1);"
+                               "	fragColor = vec4(1,0,1,1);"
                                "}";
 #endif
 
@@ -276,12 +276,10 @@ void Shader::SetDefaultAttributes()
 }
 
 /*
-
 If your shader all goes wrong, this function will be called, to create the
 emergency 'default' shader. It goes through all of the stages outlined in
 the tutorial notes, but instead of reading from a file, it uses some const
 strings I defined at the top
-
 */
 void Shader::LoadDefaultShader()
 {

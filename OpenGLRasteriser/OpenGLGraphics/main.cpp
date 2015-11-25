@@ -19,6 +19,7 @@ void main(void)
   }
 
   RenderObject o(m, s);
+
   o.SetModelMatrix(Matrix4::Translation(Vector3(0, 0, -10)) * Matrix4::Scale(Vector3(1, 1, 1)));
   r.AddRenderObject(o);
 
@@ -26,9 +27,28 @@ void main(void)
 
   r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, 0), Vector3(0, 0, -10)));
 
+  Vector4 vec[5];
+  vec[0] = Vector4(1.0, 0.0, 0.0, 1.0);
+  vec[1] = Vector4(0.0, 1.0, 0.0, 1.0);
+  vec[2] = Vector4(0.0, 0.0, 1.0, 1.0);
+  vec[3] = Vector4(0.0, 1.0, 1.0, 1.0);
+  vec[4] = Vector4(1.0, 1.0, 0.0, 1.0);
+
+  int col = 0;
+
   while (w.UpdateWindow())
   {
     float msec = w.GetTimer()->GetTimedMS();
+
+    if (Keyboard::KeyTriggered(KEY_C))
+    {
+      col++;
+      if (col > 4)
+        col = 0;
+    }
+
+    glUniform4fv(glGetUniformLocation(o.GetShader()->GetShaderProgram(), "colours"), 5, (float*)&vec);
+    glUniform1i(glGetUniformLocation(o.GetShader()->GetShaderProgram(), "selectedColour"), col);
 
     o.SetModelMatrix(o.GetModelMatrix() * Matrix4::Rotation(0.1f * msec, Vector3(0, 1, 1)));
 

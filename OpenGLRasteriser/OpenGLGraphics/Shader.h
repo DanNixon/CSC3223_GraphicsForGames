@@ -48,6 +48,7 @@ public:
   {
     return linkSuccess;
   }
+
   bool LinkProgram();
 
   bool UsingDefaultShader() const

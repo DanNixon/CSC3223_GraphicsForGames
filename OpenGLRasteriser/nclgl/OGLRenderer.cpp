@@ -215,7 +215,7 @@ projMatrix, and textureMatrix. Updates them with the relevant
 matrix data. Sanity checks currentShader, so is always safe to
 call.
 */
-void OGLRenderer::UpdateShaderMatrices(GLuint program)	{
+void OGLRenderer::UpdateShaderMatrices(GLuint program) {
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix")  , 1, false, (float*)&modelMatrix);
 	glUniformMatrix4fv(glGetUniformLocation(program, "viewMatrix")   , 1, false, (float*)&viewMatrix);
 	glUniformMatrix4fv(glGetUniformLocation(program, "projMatrix")   , 1, false, (float*)&projMatrix);
