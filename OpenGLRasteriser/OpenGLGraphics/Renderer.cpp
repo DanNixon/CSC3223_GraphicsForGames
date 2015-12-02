@@ -41,15 +41,15 @@ void Renderer::Render(const RenderObject &o)
     glUseProgram(program);
     UpdateShaderMatrices(program);
 
-    glUniform1f(glGetUniformLocation(program, "time"), m_time / 10000.0f);
-    glUniform1i(glGetUniformLocation(program, "textures[0]"), 0);
-    glUniform1i(glGetUniformLocation(program, "textures[1]"), 1);
+    glUniform1f(glGetUniformLocation(program, "time"), m_time);
+    glUniform1i(glGetUniformLocation(program, "objectTexture"), 0);
+    glUniform1i(glGetUniformLocation(program, "textures[0]"), 1);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, o.GetTexture());
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_textures[1]);
+    glBindTexture(GL_TEXTURE_2D, m_textures[0]);
 
     o.Draw();
   }

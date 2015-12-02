@@ -18,8 +18,8 @@ void main(void)
     std::cin.get();
   }
 
-  GLuint smiley = r.LoadTexture("smiley.png", 0);
-  GLuint noise = r.LoadTexture("noise.png", 1);
+  GLuint smiley = r.LoadTexture("smiley.png");
+  r.LoadTexture("noise.png", 0);
 
   RenderObject o(m, s, smiley);
 
@@ -27,33 +27,11 @@ void main(void)
   r.AddRenderObject(o);
 
   r.SetProjectionMatrix(Matrix4::Perspective(1, 100, 1.33f, 45.0f));
-
   r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, 0), Vector3(0, 0, -10)));
-
-  Vector4 vec[5];
-  vec[0] = Vector4(1.0, 0.0, 0.0, 1.0);
-  vec[1] = Vector4(0.0, 1.0, 0.0, 1.0);
-  vec[2] = Vector4(0.0, 0.0, 1.0, 1.0);
-  vec[3] = Vector4(0.0, 1.0, 1.0, 1.0);
-  vec[4] = Vector4(1.0, 1.0, 0.0, 1.0);
-
-  int col = 0;
 
   while (w.UpdateWindow())
   {
     float msec = w.GetTimer()->GetTimedMS();
-
-    if (Keyboard::KeyTriggered(KEY_C))
-    {
-      col++;
-      if (col > 5)
-        col = 0;
-    }
-
-    GLuint program = o.GetShader()->GetShaderProgram();
-    glUseProgram(program);
-    glUniform4fv(glGetUniformLocation(program, "colours"), 5, (float*)&vec);
-    glUniform1i(glGetUniformLocation(program, "selectedColour"), col);
 
     o.SetModelMatrix(o.GetModelMatrix() * Matrix4::Rotation(0.1f * msec, Vector3(0, 1, 1)));
 
