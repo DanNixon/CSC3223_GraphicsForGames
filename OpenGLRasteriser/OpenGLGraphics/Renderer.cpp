@@ -4,16 +4,27 @@ Renderer::Renderer(Window &parent)
     : OGLRenderer(parent)
 {
   glEnable(GL_DEPTH_TEST);
+
+  m_time = 0.0f;
+
+  for (int i = 0; i < NUM_TEXTURES; i++)
+    m_textures[i] = 0;
 }
 
 Renderer::~Renderer(void)
 {
-  renderObjects.clear();
+  m_renderObjects.clear();
+
+  for (int i = 0; i < NUM_TEXTURES; i++)
+  {
+    if (m_textures[i] != 0)
+      glDeleteTextures(1, &m_textures[i]);
+  }
 }
 
 void Renderer::RenderScene()
 {
-  for (vector<RenderObject *>::iterator i = renderObjects.begin(); i != renderObjects.end(); ++i)
+  for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end(); ++i)
   {
     Render(*(*i));
   }
@@ -28,8 +39,17 @@ void Renderer::Render(const RenderObject &o)
     GLuint program = o.GetShader()->GetShaderProgram();
 
     glUseProgram(program);
-
     UpdateShaderMatrices(program);
+
+    glUniform1f(glGetUniformLocation(program, "time"), m_time / 10000.0f);
+    glUniform1i(glGetUniformLocation(program, "textures[0]"), 0);
+    glUniform1i(glGetUniformLocation(program, "textures[1]"), 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, o.GetTexture());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_textures[1]);
 
     o.Draw();
   }
@@ -43,8 +63,24 @@ void Renderer::Render(const RenderObject &o)
 
 void Renderer::UpdateScene(float msec)
 {
-  for (vector<RenderObject *>::iterator i = renderObjects.begin(); i != renderObjects.end(); ++i)
+  m_time += msec;
+
+  for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end(); ++i)
   {
     (*i)->Update(msec);
   }
+}
+
+GLuint Renderer::LoadTexture(string filename)
+{
+  return SOIL_load_OGL_texture(filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+}
+
+GLuint Renderer::LoadTexture(string filename, int idx)
+{
+  if (idx > NUM_TEXTURES)
+    return 0;
+
+  m_textures[idx] = LoadTexture(filename);
+  return m_textures[idx];
 }

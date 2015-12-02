@@ -10,6 +10,8 @@ using std::vector;
 class Renderer : public OGLRenderer
 {
 public:
+  static const int NUM_TEXTURES = 5;
+
   Renderer(Window &parent);
   ~Renderer(void);
 
@@ -21,9 +23,14 @@ public:
 
   void AddRenderObject(RenderObject &r)
   {
-    renderObjects.push_back(&r);
+    m_renderObjects.push_back(&r);
   }
 
+  GLuint LoadTexture(string filename);
+  GLuint LoadTexture(string filename, int idx);
+
 protected:
-  vector<RenderObject *> renderObjects;
+  float m_time;
+  vector<RenderObject *> m_renderObjects;
+  GLuint m_textures[NUM_TEXTURES];
 };

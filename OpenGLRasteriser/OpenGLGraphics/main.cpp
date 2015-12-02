@@ -18,7 +18,10 @@ void main(void)
     std::cin.get();
   }
 
-  RenderObject o(m, s);
+  GLuint smiley = r.LoadTexture("smiley.png", 0);
+  GLuint noise = r.LoadTexture("noise.png", 1);
+
+  RenderObject o(m, s, smiley);
 
   o.SetModelMatrix(Matrix4::Translation(Vector3(0, 0, -10)) * Matrix4::Scale(Vector3(1, 1, 1)));
   r.AddRenderObject(o);
@@ -43,12 +46,14 @@ void main(void)
     if (Keyboard::KeyTriggered(KEY_C))
     {
       col++;
-      if (col > 4)
+      if (col > 5)
         col = 0;
     }
 
-    glUniform4fv(glGetUniformLocation(o.GetShader()->GetShaderProgram(), "colours"), 5, (float*)&vec);
-    glUniform1i(glGetUniformLocation(o.GetShader()->GetShaderProgram(), "selectedColour"), col);
+    GLuint program = o.GetShader()->GetShaderProgram();
+    glUseProgram(program);
+    glUniform4fv(glGetUniformLocation(program, "colours"), 5, (float*)&vec);
+    glUniform1i(glGetUniformLocation(program, "selectedColour"), col);
 
     o.SetModelMatrix(o.GetModelMatrix() * Matrix4::Rotation(0.1f * msec, Vector3(0, 1, 1)));
 

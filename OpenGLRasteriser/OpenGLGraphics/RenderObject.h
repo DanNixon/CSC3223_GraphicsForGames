@@ -16,6 +16,7 @@ public:
   {
     return mesh;
   }
+
   void SetMesh(Mesh *m)
   {
     mesh = m;
@@ -25,6 +26,7 @@ public:
   {
     return shader;
   }
+
   void SetShader(Shader *s)
   {
     shader = s;
@@ -34,6 +36,7 @@ public:
   {
     return texture;
   }
+
   void SetTexture(GLuint tex)
   {
     texture = tex;
@@ -43,6 +46,7 @@ public:
   {
     modelMatrix = mat;
   }
+
   Matrix4 GetModelMatrix() const
   {
     return modelMatrix;
@@ -51,8 +55,6 @@ public:
   virtual void Update(float msec);
 
   virtual void Draw() const;
-
-  // virtual void Update(float msec);
 
   void AddChild(RenderObject &child)
   {
