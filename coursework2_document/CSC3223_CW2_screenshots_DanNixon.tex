@@ -1,0 +1,54 @@
+\documentclass[a4paper]{article}
+
+% Set for specific document
+\def\DOCTITLE{Hardware Shader Screenshots}
+\def\DOCAUTHOR{Dan Nixon (120263697)}
+\def\DOCDATE{\today}
+
+% Set document attributes
+\title{\DOCTITLE}
+\author{\DOCAUTHOR}
+\date{\DOCDATE}
+
+\usepackage{fullpage}
+\usepackage{scrextend}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+
+% Handle graphics correctly
+\ifx\pdftexversion\undefined
+\usepackage{graphicx}
+% \usepackage[dvips]{graphicx}
+\else
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsRule{*}{mps}{*}{}
+\fi
+
+% Setup headers and footers
+\pagestyle{fancy}
+\lhead{}
+\chead{\DOCTITLE}
+\rhead{}
+\rfoot{\DOCDATE}
+\cfoot{\thepage}
+\lfoot{\DOCAUTHOR}
+
+% New page for each section
+\newcommand{\sectionbreak}{\clearpage}
+
+% Set header and footer sizes
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\setlength{\headheight}{15.2pt}
+\setlength{\headsep}{15.2pt}
+
+\begin{document}
+
+% \begin{figure}[h!]
+  % \centering
+  % \includegraphics[width=0.85\textwidth]{graphics/screen_1.eps}
+  % \caption{TODO}
+  % \label{fig:screen_1}
+% \end{figure}
+
+\end{document}
