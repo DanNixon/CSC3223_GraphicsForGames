@@ -2,24 +2,20 @@
 
 Renderer::Renderer(Window &parent)
     : OGLRenderer(parent)
+    , m_time(0.0f)
+    , m_animPosition(0.0f)
+    , m_runAnim(false)
+    , m_loopAnim(false)
 {
   glEnable(GL_DEPTH_TEST);
 
-  m_time = 0.0f;
-
-  for (int i = 0; i < NUM_TEXTURES; i++)
-    m_textures[i] = 0;
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
 }
 
 Renderer::~Renderer(void)
 {
   m_renderObjects.clear();
-
-  for (int i = 0; i < NUM_TEXTURES; i++)
-  {
-    if (m_textures[i] != 0)
-      glDeleteTextures(1, &m_textures[i]);
-  }
 }
 
 void Renderer::RenderScene()
@@ -41,15 +37,14 @@ void Renderer::Render(const RenderObject &o)
     glUseProgram(program);
     UpdateShaderMatrices(program);
 
-    glUniform1f(glGetUniformLocation(program, "time"), m_time);
-    glUniform1i(glGetUniformLocation(program, "objectTexture"), 0);
-    glUniform1i(glGetUniformLocation(program, "textures[0]"), 1);
+    glUniform1f(glGetUniformLocation(program, "animPosition"), m_animPosition);
+    glUniform1i(glGetUniformLocation(program, "objectTextures[0]"), 0);
+    glUniform1i(glGetUniformLocation(program, "objectTextures[1]"), 1);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, o.GetTexture());
-
+    glBindTexture(GL_TEXTURE_2D, o.GetTexture(0));
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_textures[0]);
+    glBindTexture(GL_TEXTURE_2D, o.GetTexture(1));
 
     o.Draw();
   }
@@ -65,22 +60,44 @@ void Renderer::UpdateScene(float msec)
 {
   m_time += msec;
 
+  if (m_runAnim)
+  {
+    if (m_animPosition >= 1.0)
+    {
+      if (m_loopAnim)
+      {
+        animStop();
+        animStart(m_loopAnim);
+      }
+    }
+    else
+      m_animPosition += 0.0001;
+  }
+
   for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end(); ++i)
   {
     (*i)->Update(msec);
   }
 }
 
+void Renderer::animStart(bool loop)
+{
+  m_runAnim = true;
+  m_loopAnim = loop;
+}
+
+void Renderer::animPause()
+{
+  m_runAnim = false;
+}
+
+void Renderer::animStop()
+{
+  m_animPosition = 0.0f;
+  m_runAnim = false;
+}
+
 GLuint Renderer::LoadTexture(string filename)
 {
   return SOIL_load_OGL_texture(filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-}
-
-GLuint Renderer::LoadTexture(string filename, int idx)
-{
-  if (idx > NUM_TEXTURES)
-    return 0;
-
-  m_textures[idx] = LoadTexture(filename);
-  return m_textures[idx];
 }

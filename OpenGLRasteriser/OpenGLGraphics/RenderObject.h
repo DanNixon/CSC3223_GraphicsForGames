@@ -8,6 +8,8 @@
 class RenderObject
 {
 public:
+  static const int NUM_TEXTURES = 2;
+
   RenderObject(void);
   RenderObject(Mesh *m, Shader *s, GLuint t = 0);
   ~RenderObject(void);
@@ -32,14 +34,14 @@ public:
     shader = s;
   }
 
-  GLuint GetTexture() const
+  GLuint GetTexture(int i) const
   {
-    return texture;
+    return textures[i];
   }
 
-  void SetTexture(GLuint tex)
+  void SetTexture(int i, GLuint tex)
   {
-    texture = tex;
+    textures[i] = tex;
   }
 
   void SetModelMatrix(Matrix4 mat)
@@ -76,7 +78,7 @@ protected:
   Mesh *mesh;
   Shader *shader;
 
-  GLuint texture;
+  GLuint textures[NUM_TEXTURES];
 
   Matrix4 modelMatrix;
   Matrix4 worldTransform;

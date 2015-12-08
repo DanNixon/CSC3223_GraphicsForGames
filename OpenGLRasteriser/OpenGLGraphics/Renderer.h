@@ -26,11 +26,21 @@ public:
     m_renderObjects.push_back(&r);
   }
 
+  void animStart(bool loop = false);
+  void animPause();
+  void animStop();
+
+  float getAnimPosition()
+  {
+    return m_animPosition;
+  }
+
   GLuint LoadTexture(string filename);
-  GLuint LoadTexture(string filename, int idx);
 
 protected:
   float m_time;
+  float m_animPosition;
+  bool m_runAnim;
+  bool m_loopAnim;
   vector<RenderObject *> m_renderObjects;
-  GLuint m_textures[NUM_TEXTURES];
 };

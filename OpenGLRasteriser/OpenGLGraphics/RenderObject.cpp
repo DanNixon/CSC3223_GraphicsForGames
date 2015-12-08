@@ -2,17 +2,22 @@
 
 RenderObject::RenderObject(void)
 {
+  for (int i = 0; i < NUM_TEXTURES; i++)
+    textures[i] = NULL;
+
   mesh = NULL;
   shader = NULL;
-  texture = NULL;
   parent = NULL;
 }
 
 RenderObject::RenderObject(Mesh *m, Shader *s, GLuint t)
 {
+  for (int i = 0; i < NUM_TEXTURES; i++)
+    textures[i] = NULL;
+
   mesh = m;
   shader = s;
-  texture = t;
+  textures[0] = t;
   parent = NULL;
 }
 
