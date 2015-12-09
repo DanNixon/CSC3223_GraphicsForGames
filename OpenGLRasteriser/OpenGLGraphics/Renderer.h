@@ -26,11 +26,9 @@ public:
     m_renderObjects.push_back(&r);
   }
 
-  void animStart(bool loop = true);
+  void animStart();
   void animPause();
   void animStop();
-  void setAnimReverse(bool reverse);
-  void toggleAnimReverse();
 
   float getAnimPosition()
   {
@@ -44,6 +42,5 @@ protected:
   float m_animPosition;
   float m_animDelta;
   bool m_runAnim;
-  bool m_loopAnim;
   vector<RenderObject *> m_renderObjects;
 };
