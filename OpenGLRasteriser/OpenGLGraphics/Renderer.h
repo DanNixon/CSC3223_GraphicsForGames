@@ -10,7 +10,7 @@ using std::vector;
 class Renderer : public OGLRenderer
 {
 public:
-  static const int NUM_TEXTURES = 5;
+  static const int NUM_TEXTURES = 2;
 
   Renderer(Window &parent);
   ~Renderer(void);
@@ -26,9 +26,11 @@ public:
     m_renderObjects.push_back(&r);
   }
 
-  void animStart(bool loop = false);
+  void animStart(bool loop = true);
   void animPause();
   void animStop();
+  void setAnimReverse(bool reverse);
+  void toggleAnimReverse();
 
   float getAnimPosition()
   {
@@ -40,6 +42,7 @@ public:
 protected:
   float m_time;
   float m_animPosition;
+  float m_animDelta;
   bool m_runAnim;
   bool m_loopAnim;
   vector<RenderObject *> m_renderObjects;

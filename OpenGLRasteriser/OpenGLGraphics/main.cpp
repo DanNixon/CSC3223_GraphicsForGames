@@ -40,6 +40,10 @@ void main(void)
   {
     float msec = w.GetTimer()->GetTimedMS();
 
+    // Pause
+    if (Keyboard::KeyTriggered(KEY_P))
+      r.animPause();
+
     // Reset scene
     if (Keyboard::KeyTriggered(KEY_R))
     {

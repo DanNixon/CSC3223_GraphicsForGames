@@ -4,6 +4,7 @@ Renderer::Renderer(Window &parent)
     : OGLRenderer(parent)
     , m_time(0.0f)
     , m_animPosition(0.0f)
+    , m_animDelta(0.01)
     , m_runAnim(false)
     , m_loopAnim(false)
 {
@@ -38,6 +39,7 @@ void Renderer::Render(const RenderObject &o)
     UpdateShaderMatrices(program);
 
     glUniform1f(glGetUniformLocation(program, "animPosition"), m_animPosition);
+
     glUniform1i(glGetUniformLocation(program, "objectTextures[0]"), 0);
     glUniform1i(glGetUniformLocation(program, "objectTextures[1]"), 1);
 
@@ -62,16 +64,17 @@ void Renderer::UpdateScene(float msec)
 
   if (m_runAnim)
   {
-    if (m_animPosition >= 1.0)
+    if (m_animPosition >= 1.0 || m_animPosition < 0.0)
     {
       if (m_loopAnim)
       {
-        animStop();
-        animStart(m_loopAnim);
+        //animStop();
+        toggleAnimReverse();
+        //animStart(m_loopAnim);
       }
     }
     else
-      m_animPosition += 0.0001;
+      m_animPosition += m_animDelta;
   }
 
   for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end(); ++i)
@@ -88,13 +91,24 @@ void Renderer::animStart(bool loop)
 
 void Renderer::animPause()
 {
-  m_runAnim = false;
+  if (m_animPosition < m_animDelta || m_animPosition > 1.0 - m_animDelta)
+    return;
+
+  m_runAnim = !m_runAnim;
 }
 
 void Renderer::animStop()
 {
   m_animPosition = 0.0f;
   m_runAnim = false;
+}
+
+void Renderer::setAnimReverse(bool reverse)
+{
+  if (reverse)
+    m_animDelta = -abs(m_animDelta);
+  else
+    m_animDelta = abs(m_animDelta);
 }
 
 GLuint Renderer::LoadTexture(string filename)
