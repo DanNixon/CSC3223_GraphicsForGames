@@ -18,7 +18,7 @@ void load_shaders()
   g_shaders[1] = new Shader("shrink_vertex.glsl", "basic_fragment.glsl");
   g_shaders[2] = new Shader("basic_vertex.glsl", "texfade_fragment.glsl");
   g_shaders[3] = new Shader("basic_vertex.glsl", "fade_fragment.glsl");
-  g_shaders[4] = new Shader("basic_vertex.glsl", "basic_fragment.glsl", "test_geometry.glsl");
+  g_shaders[4] = new Shader("basic_vertex.glsl", "basic_fragment.glsl", "split_geometry.glsl");
 }
 
 void main(void)
@@ -107,7 +107,7 @@ void main(void)
       r.animStart();
     }
 
-    // Slit the cube into several smaller cubes
+    // Split the cube into several smaller cubes
     if (Keyboard::KeyTriggered(KEY_A))
     {
       cube.SetShader(g_shaders[4]);
