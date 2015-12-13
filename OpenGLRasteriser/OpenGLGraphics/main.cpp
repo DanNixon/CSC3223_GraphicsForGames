@@ -6,19 +6,30 @@
 #define NUM_SHADERS 5
 Shader *g_shaders[NUM_SHADERS];
 
-void load_shaders()
+void delete_shaders()
 {
   for (int i = 0; i < NUM_SHADERS; i++)
   {
-    delete g_shaders[i];
+    if (g_shaders[i] != NULL)
+      delete g_shaders[i];
+
     g_shaders[i] = NULL;
   }
+}
 
+void load_shaders()
+{
   g_shaders[0] = new Shader("basic_vertex.glsl", "basic_fragment.glsl");
   g_shaders[1] = new Shader("shrink_vertex.glsl", "basic_fragment.glsl");
   g_shaders[2] = new Shader("basic_vertex.glsl", "texfade_fragment.glsl");
   g_shaders[3] = new Shader("basic_vertex.glsl", "fade_fragment.glsl");
   g_shaders[4] = new Shader("basic_vertex.glsl", "basic_fragment.glsl", "split_geometry.glsl");
+
+  for (int i = 0; i < NUM_SHADERS; i++)
+  {
+    if (g_shaders[i] != NULL && g_shaders[i]->UsingDefaultShader())
+      cout << "Shader " << i << " failed to load or compile." << endl;
+  }
 }
 
 void main(void)
@@ -28,8 +39,8 @@ void main(void)
 
   // Load the cube mesh and textures
   Mesh *cubeMesh = Mesh::LoadMeshFile("cube.asciimesh");
-  GLuint cubeNormalTexture = r.LoadTexture("smiley.png");
-  GLuint cubeDestroyedTexture = r.LoadTexture("noise.png");
+  GLuint cubeNormalTexture = r.LoadTexture("bricks.png");
+  GLuint cubeDestroyedTexture = r.LoadTexture("bricks_destroyed.png");
 
   // Load and compile the shaders
   load_shaders();
@@ -73,6 +84,7 @@ void main(void)
     // Reload shaders
     if (Keyboard::KeyTriggered(KEY_0))
     {
+      delete_shaders();
       load_shaders();
       cube.SetShader(g_shaders[0]);
     }
@@ -130,4 +142,6 @@ void main(void)
     r.RenderScene();
     r.SwapBuffers();
   }
+
+  delete_shaders();
 }
