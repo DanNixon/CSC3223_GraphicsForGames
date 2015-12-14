@@ -2,7 +2,7 @@
 
 layout (triangles, equal_spacing, cw) in;
 
-uniform sampler2D objectTexture;
+uniform sampler2D objectTextures[5];
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -50,13 +50,24 @@ void main ()
 			IN[1].texCoord,
 			IN[2].texCoord);
 
-	vec4 worldPos = vec4(combinedPos, 1);
+	vec3 p0 = gl_in[0].gl_Position.xyz;
+	vec3 p1 = gl_in[1].gl_Position.xyz;
+	vec3 p2 = gl_in[2].gl_Position.xyz;
+	
+	vec3 v0 = p0 - p1;
+	vec3 v1 = p2 - p1;
+	
+	vec3 norm = cross(v1, v0);
+	norm = normalize(norm);
 			
-	vec4 texCol = texture(objectTexture, OUT.texCoord);
-	float height = (texCol.r + texCol.g + texCol.g) / 3;
-	if (height >= 2.5)
+	vec4 worldPos = vec4(combinedPos, 1);
+
+	vec4 texCol = texture(objectTextures[2], OUT.texCoord);
+	float height = texCol.r + texCol.g + texCol.g;
+	if (height > 2.0)
 	{
-		worldPos.y += height;
+		height /= 30;
+		worldPos.xyz -= (norm * vec3(height, height, height));
 	}
 
 	gl_Position = projMatrix * viewMatrix * modelMatrix * worldPos;

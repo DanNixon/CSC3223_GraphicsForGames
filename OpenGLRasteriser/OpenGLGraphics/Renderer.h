@@ -10,7 +10,7 @@ using std::vector;
 class Renderer : public OGLRenderer
 {
 public:
-  static const int NUM_TEXTURES = 2;
+  static const int NUM_TEXTURES = 5;
 
   Renderer(Window &parent);
   ~Renderer(void);

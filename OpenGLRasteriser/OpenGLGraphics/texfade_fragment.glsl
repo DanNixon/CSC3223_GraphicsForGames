@@ -1,7 +1,7 @@
 #version 330 core
 
 uniform float animPosition;
-uniform sampler2D objectTextures[2];
+uniform sampler2D objectTextures[5];
 
 in Vertex
 {

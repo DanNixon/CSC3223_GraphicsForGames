@@ -104,7 +104,27 @@ void main()
 			if (s + t > 1)
 				continue;
 
-			cubeAtPoint(triPos(s, t), size);
+			//cubeAtPoint(triPos(s, t), size);
 		}
 	}
+	
+	vec3 p0 = gl_in[0].gl_Position.xyz;
+	vec3 p1 = gl_in[1].gl_Position.xyz;
+	vec3 p2 = gl_in[2].gl_Position.xyz;
+	
+	vec3 v0 = p0 - p1;
+	vec3 v1 = p2 - p1;
+	
+	vec3 norm = cross(v1, v0);
+	norm = normalize(norm);
+	
+	vec3 p = (p0 + p1 + p2) / 3;
+	
+	OUT.colour = vec4(1, 0, 0, 1);
+	gl_Position = (projMatrix * viewMatrix * modelMatrix) * vec4(p, 1);
+	EmitVertex();
+	OUT.colour = vec4(0, 1, 0, 1);
+	gl_Position = (projMatrix * viewMatrix * modelMatrix) * vec4(p + norm, 1);
+	EmitVertex();
+	EndPrimitive();
 }
