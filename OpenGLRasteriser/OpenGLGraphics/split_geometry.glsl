@@ -32,6 +32,7 @@ vec4 triPos(float s, float t)
 
 void cubeVertex(mat4 mvp, vec4 pos, vec3 vPos)
 {
+	OUT.texCoord = vPos.xy;
 	gl_Position = mvp * vec4(pos.xyz + vPos, 1);
 	EmitVertex();
 }
@@ -72,17 +73,17 @@ void cubeAtPoint(vec4 p, float s)
 
 void main()
 {
-	float diff = 0.2; //max(min(1 - animPosition, 0.6), 0.18);
-	float size = diff - (diff / 4);
+	float d = 0.2;
+	float ap = animPosition + 1.0;
 
-	for (float s = 0; s < 1; s += diff)
+	for (float s = 0; s < 1; s += d)
 	{
-		for (float t = 0; t < 1; t += diff)
+		for (float t = 0; t < 1; t += d)
 		{
 			if (s + t > 1)
 				continue;
 
-			cubeAtPoint(triPos(s, t), size);
+			cubeAtPoint(triPos(s, t) * ap, d);
 		}
 	}
 }
