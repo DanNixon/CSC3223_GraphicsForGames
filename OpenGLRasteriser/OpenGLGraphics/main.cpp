@@ -24,7 +24,7 @@ void load_shaders()
   g_shaders[2] = new Shader("basic_vertex.glsl", "texfade_fragment.glsl");
   g_shaders[3] = new Shader("basic_vertex.glsl", "fade_fragment.glsl");
   g_shaders[4] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "split_geometry.glsl");
-  g_shaders[5] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "", "test_tess_ctrl.glsl", "test_tess_eval.glsl");
+  g_shaders[5] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "", "detail_tcs.glsl", "detail_tes.glsl");
 
   int failures = 0;
   for (int i = 0; i < NUM_SHADERS; i++)
