@@ -7,7 +7,7 @@ uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 
 layout (triangles) in;
-layout (line_strip, max_vertices = 256) out;
+layout (triangle_strip, max_vertices = 256) out;
 
 in Vertex
 {
@@ -30,72 +30,50 @@ vec4 triPos(float s, float t)
 	return s * a + t * b + (1 - s - t) * c;
 }
 
-void cubeVertex(vec4 pos)
+void cubeVertex(mat4 mvp, vec4 pos, vec3 vPos)
 {
-	gl_Position = (projMatrix * viewMatrix * modelMatrix) * pos;
+	gl_Position = mvp * vec4(pos.xyz + vPos, 1);
 	EmitVertex();
 }
 
 void cubeAtPoint(vec4 p, float s)
 {
-	vec4 pos;
+	vec3 upper = vec3(0, 0, s);
+	vec3 lower = vec3(0, 0, -s);
+	vec3 left = vec3(-s, 0, 0);
+	vec3 right = vec3(s, 0, 0);
+	vec3 front = vec3(0, s, 0);
+	vec3 back = vec3(0, -s, 0);
 	
-	pos = p;
-	pos.x += s;
-	pos.y += s;
-	pos.z += s;
-	cubeVertex(pos);
+	mat4 mvp = projMatrix * viewMatrix * modelMatrix;
+
+	// First strip (front and side faces)
+	cubeVertex(mvp, p, upper + left + back);
+	cubeVertex(mvp, p, lower + left + back);
+	cubeVertex(mvp, p, upper + left + front);
+	cubeVertex(mvp, p, lower + left + front);
+	cubeVertex(mvp, p, upper + right + front);
+	cubeVertex(mvp, p, lower + right + front);
+	cubeVertex(mvp, p, upper + right + back);
+	cubeVertex(mvp, p, lower + right + back);
+	EndPrimitive();
 	
-	pos = p;
-	pos.x -= s;
-	pos.y += s;
-	pos.z += s;
-	cubeVertex(pos);
-	
-	pos = p;
-	pos.x += s;
-	pos.y -= s;
-	pos.z += s;
-	cubeVertex(pos);
-	
-	pos = p;
-	pos.x -= s;
-	pos.y -= s;
-	pos.z += s;
-	cubeVertex(pos);
-	
-	pos = p;
-	pos.x -= s;
-	pos.y -= s;
-	pos.z -= s;
-	cubeVertex(pos);
-	
-	pos = p;
-	pos.x += s;
-	pos.y -= s;
-	pos.z -= s;
-	cubeVertex(pos);
-	
-	pos = p;
-	pos.x -= s;
-	pos.y += s;
-	pos.z -= s;
-	cubeVertex(pos);
-	
-	pos = p;
-	pos.x += s;
-	pos.y += s;
-	pos.z -= s;
-	cubeVertex(pos);
-	
+	// Second strip (top, bottom and side faces)
+	cubeVertex(mvp, p, upper + left + front);
+	cubeVertex(mvp, p, upper + right + front);
+	cubeVertex(mvp, p, upper + left + back);
+	cubeVertex(mvp, p, upper + right + back);
+	cubeVertex(mvp, p, lower + left + back);
+	cubeVertex(mvp, p, lower + right + back);
+	cubeVertex(mvp, p, lower + left + front);
+	cubeVertex(mvp, p, lower + right + front);
 	EndPrimitive();
 }
 
 void main()
 {
-	/* Clamp this to the range where it actually looks remotely good */
-	float diff = max(min(1 - animPosition, 0.6), 0.18);
-	float size = diff + (diff / 4);
+	float diff = 0.2; //max(min(1 - animPosition, 0.6), 0.18);
+	float size = diff - (diff / 4);
 
 	for (float s = 0; s < 1; s += diff)
 	{
@@ -104,27 +82,7 @@ void main()
 			if (s + t > 1)
 				continue;
 
-			//cubeAtPoint(triPos(s, t), size);
+			cubeAtPoint(triPos(s, t), size);
 		}
 	}
-	
-	vec3 p0 = gl_in[0].gl_Position.xyz;
-	vec3 p1 = gl_in[1].gl_Position.xyz;
-	vec3 p2 = gl_in[2].gl_Position.xyz;
-	
-	vec3 v0 = p0 - p1;
-	vec3 v1 = p2 - p1;
-	
-	vec3 norm = cross(v1, v0);
-	norm = normalize(norm);
-	
-	vec3 p = (p0 + p1 + p2) / 3;
-	
-	OUT.colour = vec4(1, 0, 0, 1);
-	gl_Position = (projMatrix * viewMatrix * modelMatrix) * vec4(p, 1);
-	EmitVertex();
-	OUT.colour = vec4(0, 1, 0, 1);
-	gl_Position = (projMatrix * viewMatrix * modelMatrix) * vec4(p + norm, 1);
-	EmitVertex();
-	EndPrimitive();
 }
