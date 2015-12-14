@@ -36,6 +36,12 @@ void Renderer::Render(const RenderObject &o)
 
     glUseProgram(program);
     UpdateShaderMatrices(program);
+    ApplyShaderLight(program);
+
+    Matrix3 rotation = Matrix3(viewMatrix);
+    Vector3 invCamPos = viewMatrix.GetPositionVector();
+    Vector3 camPos = rotation * -invCamPos;
+    glUniform3fv(glGetUniformLocation(program, "cameraPos"), 1, (float*)&camPos);
 
     glUniform1f(glGetUniformLocation(program, "animPosition"), m_animPosition);
 
@@ -97,4 +103,18 @@ void Renderer::animStop()
 GLuint Renderer::LoadTexture(string filename)
 {
   return SOIL_load_OGL_texture(filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+}
+
+void Renderer::SetLighting(const Vector3 &position, float radius, const Vector3 &colour)
+{
+  m_light.position = position;
+  m_light.radius = radius;
+  m_light.colour = colour;
+}
+
+void Renderer::ApplyShaderLight(GLuint program)
+{
+  glUniform3fv(glGetUniformLocation(program, "lightPos"), 1, (float*)&(m_light.position));
+  glUniform1f(glGetUniformLocation(program, "lightRadius"), m_light.radius);
+  glUniform3fv(glGetUniformLocation(program, "lightColour"), 1, (float*)&(m_light.colour));
 }

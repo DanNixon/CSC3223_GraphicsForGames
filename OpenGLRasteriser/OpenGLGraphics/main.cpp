@@ -3,7 +3,7 @@
 
 #pragma comment(lib, "nclgl.lib")
 
-#define NUM_SHADERS 6
+#define NUM_SHADERS 7
 Shader *g_shaders[NUM_SHADERS];
 
 void delete_shaders()
@@ -19,12 +19,16 @@ void delete_shaders()
 
 void load_shaders()
 {
+  for (int i = 0; i < NUM_SHADERS; i++)
+    g_shaders[i] = NULL;
+
   g_shaders[0] = new Shader("basic_vertex.glsl", "basic_fragment.glsl");
   g_shaders[1] = new Shader("shrink_vertex.glsl", "basic_fragment.glsl");
   g_shaders[2] = new Shader("basic_vertex.glsl", "texfade_fragment.glsl");
   g_shaders[3] = new Shader("basic_vertex.glsl", "fade_fragment.glsl");
   g_shaders[4] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "split_geometry.glsl");
   g_shaders[5] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "", "detail_tcs.glsl", "detail_tes.glsl");
+  g_shaders[6] = new Shader("lighting_vertex.glsl", "lighting_fragment.glsl");
 
   int failures = 0;
   for (int i = 0; i < NUM_SHADERS; i++)
@@ -63,6 +67,7 @@ void main(void)
 
   r.SetProjectionMatrix(Matrix4::Perspective(1, 100, 1.33f, 45.0f));
   r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, 0), Vector3(0, 0, -10)));
+  r.SetLighting(Vector3(10.0f, 5.0f, 0.0f), 100.0f, Vector3(1, 1, 1));
 
   // Print the list of key brindings for shader demos
   cout << endl << "Key bindings:" << endl
@@ -76,7 +81,8 @@ void main(void)
     << "d - Fades form the normal texture to a destroyed texture" << endl
     << "f - Fade the cube to transaparent" << endl
     << "a - Split the cube into several smaller cubes" << endl
-    << "c - Detail and crack the cube" << endl;
+    << "c - Detail and crack the cube" << endl
+    << "l - Lighting" << endl;
 
   bool rotate = true;
   bool disableDepthDuringAnim = false;
@@ -157,6 +163,13 @@ void main(void)
     {
       cubeMesh->type = GL_PATCHES;
       cube.SetShader(g_shaders[5]);
+      r.animStart();
+    }
+
+    // Lighting
+    if (Keyboard::KeyTriggered(KEY_L))
+    {
+      cube.SetShader(g_shaders[6]);
       r.animStart();
     }
 

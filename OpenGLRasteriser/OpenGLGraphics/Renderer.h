@@ -7,6 +7,13 @@
 
 using std::vector;
 
+struct Light
+{
+  Vector3 position;
+  float radius;
+  Vector3 colour;
+};
+
 class Renderer : public OGLRenderer
 {
 public:
@@ -37,10 +44,15 @@ public:
 
   GLuint LoadTexture(string filename);
 
+  void SetLighting(const Vector3 &position, float radius, const Vector3 &colour);
+
 protected:
+  void ApplyShaderLight(GLuint program);
+
   float m_time;
   float m_animPosition;
   float m_animDelta;
   bool m_runAnim;
   vector<RenderObject *> m_renderObjects;
+  Light m_light;
 };

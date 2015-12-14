@@ -29,6 +29,7 @@ _-_-_-_-_-_-_-""  ""
 #include "Vector2.h"
 #include "Quaternion.h"
 #include "Matrix4.h"
+#include "Matrix3.h"
 #include "Window.h"
 
 using std::vector;

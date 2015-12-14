@@ -168,6 +168,7 @@ Mesh *Mesh::LoadMeshFile(const string &filename)
     }
   }
 
+  m->GenerateNormals();
   m->BufferData();
   return m;
 }
@@ -245,7 +246,37 @@ void Mesh::BufferData()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLuint), indices, GL_STATIC_DRAW);
   }
 
+  if (normals)
+  {
+    glGenBuffers(1, &bufferObject[NORMAL_BUFFER]);
+    glBindBuffer(GL_ARRAY_BUFFER, bufferObject[NORMAL_BUFFER]);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Vector3), normals, GL_STATIC_DRAW);
+    
+    glVertexAttribPointer(NORMAL_BUFFER, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(NORMAL_BUFFER);
+  }
+
   // Once we're done with the vertex buffer binding, we can unbind the VAO,
   // ready to reapply later, such as in the Draw function above!
   glBindVertexArray(0);
+}
+
+void Mesh::GenerateNormals()
+{
+  if (!normals)
+    normals = new Vector3[numVertices];
+
+  for (unsigned int i = 0; i < numVertices; i += 3)
+  {
+    Vector3 &a = vertices[i];
+    Vector3 &b = vertices[i + 1];
+    Vector3 &c = vertices[i + 2];
+    
+    Vector3 normal = Vector3::Cross(b - a, c - a);
+    normal.Normalise();
+    
+    normals[i] = normal;
+    normals[i + 1] = normal;
+    normals[i + 2] = normal;
+  }  
 }

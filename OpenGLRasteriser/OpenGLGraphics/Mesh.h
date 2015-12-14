@@ -47,6 +47,7 @@ public:
   virtual ~Mesh(void);
 
   virtual void Draw();
+  void GenerateNormals();
 
   // Generates a single triangle, with RGB colours
   static Mesh *GenerateTriangle();
