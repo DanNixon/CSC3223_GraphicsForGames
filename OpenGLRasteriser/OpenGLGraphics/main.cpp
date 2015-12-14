@@ -23,8 +23,8 @@ void load_shaders()
   g_shaders[1] = new Shader("shrink_vertex.glsl", "basic_fragment.glsl");
   g_shaders[2] = new Shader("basic_vertex.glsl", "texfade_fragment.glsl");
   g_shaders[3] = new Shader("basic_vertex.glsl", "fade_fragment.glsl");
-  g_shaders[4] = new Shader("basic_vertex.glsl", "basic_fragment.glsl", "split_geometry.glsl");
-  g_shaders[5] = new Shader("basic_vertex.glsl", "basic_fragment.glsl", "", "test_tess_ctrl.glsl", "test_tess_eval.glsl");
+  g_shaders[4] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "split_geometry.glsl");
+  g_shaders[5] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "", "test_tess_ctrl.glsl", "test_tess_eval.glsl");
 
   for (int i = 0; i < NUM_SHADERS; i++)
   {
@@ -49,11 +49,11 @@ void main(void)
   RenderObject cube(cubeMesh, g_shaders[0], cubeNormalTexture);
   cube.SetTexture(1, cubeDestroyedTexture);
 
-  cube.SetModelMatrix(Matrix4::Translation(Vector3(0, 0, 0)) * Matrix4::Scale(Vector3(1, 1, 1)));
+  cube.SetModelMatrix(Matrix4::Translation(Vector3(0, 0, -10)) * Matrix4::Scale(Vector3(1, 1, 1)));
   r.AddRenderObject(cube);
 
   r.SetProjectionMatrix(Matrix4::Perspective(1, 100, 1.33f, 45.0f));
-  r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, -10), Vector3(0, 0, 0)));
+  r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, 0), Vector3(0, 0, -10)));
 
   // Print the list of key brindings for shader demos
   cout << endl << "Key bindings:" << endl
@@ -153,6 +153,4 @@ void main(void)
     r.RenderScene();
     r.SwapBuffers();
   }
-
-  delete_shaders();
 }

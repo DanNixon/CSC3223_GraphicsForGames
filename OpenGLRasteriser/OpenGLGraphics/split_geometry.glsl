@@ -2,8 +2,12 @@
 
 uniform float animPosition;
 
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projMatrix;
+
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 256) out;
+layout (line_strip, max_vertices = 256) out;
 
 in Vertex
 {
@@ -28,7 +32,7 @@ vec4 triPos(float s, float t)
 
 void cubeVertex(vec4 pos)
 {
-	gl_Position = pos;
+	gl_Position = (projMatrix * viewMatrix * modelMatrix) * pos;
 	EmitVertex();
 }
 
@@ -91,7 +95,7 @@ void main()
 {
 	/* Clamp this to the range where it actually looks remotely good */
 	float diff = max(min(1 - animPosition, 0.6), 0.18);
-	float size = diff + (diff / 2);
+	float size = diff + (diff / 4);
 
 	for (float s = 0; s < 1; s += diff)
 	{

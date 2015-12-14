@@ -50,8 +50,14 @@ void main ()
 			IN[1].texCoord,
 			IN[2].texCoord);
 
-	//float height = texture(objectTexture, OUT.texCoord).x;
-	//worldPos.y += height * 100;
+	vec4 worldPos = vec4(combinedPos, 1);
+			
+	vec4 texCol = texture(objectTexture, OUT.texCoord);
+	float height = (texCol.r + texCol.g + texCol.g) / 3;
+	if (height >= 2.5)
+	{
+		worldPos.y += height;
+	}
 
-	gl_Position = (projMatrix * viewMatrix * modelMatrix) * vec4(combinedPos, 1);
+	gl_Position = projMatrix * viewMatrix * modelMatrix * worldPos;
 }
