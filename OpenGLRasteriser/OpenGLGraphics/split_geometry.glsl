@@ -7,7 +7,7 @@ uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 256) out;
+layout (triangle_strip, max_vertices = 170) out;
 
 in Vertex
 {
@@ -32,7 +32,7 @@ vec4 triPos(float s, float t)
 
 void cubeVertex(mat4 mvp, vec4 pos, vec3 vPos)
 {
-	OUT.texCoord = vPos.xy;
+	OUT.texCoord = (vPos.xy / 2) + 0.5;
 	gl_Position = mvp * vec4(pos.xyz + vPos, 1);
 	EmitVertex();
 }
@@ -73,7 +73,7 @@ void cubeAtPoint(vec4 p, float s)
 
 void main()
 {
-	float d = 0.2;
+	float d = 0.25;
 	float ap = animPosition + 1.0;
 
 	for (float s = 0; s < 1; s += d)

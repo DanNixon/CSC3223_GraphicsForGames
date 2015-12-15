@@ -4,7 +4,7 @@ Renderer::Renderer(Window &parent)
     : OGLRenderer(parent)
     , m_time(0.0f)
     , m_animPosition(0.0f)
-    , m_animDelta(0.0001)
+    , m_animDelta(0.005)
     , m_runAnim(false)
 {
   glEnable(GL_DEPTH_TEST);
