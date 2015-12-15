@@ -60,22 +60,28 @@ void main(void)
   cube.SetTexture(1, cubeDestroyedTexture);
   cube.SetTexture(2, cubeHeightmap);
 
-  Mesh *laserMesh = Mesh::GenerateLine(Vector3(-2.0, 0.0, 10.0), Vector3(0.0, 0.0, -10.0));
+  Mesh *staticLaserMesh = Mesh::GenerateLine(Vector3(-2.0, 0.0, 10.0), Vector3(0.0, 0.0, -10.0));
+  Mesh *movingLaserMesh = Mesh::GenerateLine(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 10.0));
   Shader *laserShader = new Shader("basic_vertex.glsl", "notex_fragment.glsl");
-  RenderObject laser(laserMesh, laserShader);
+  RenderObject staticLaser(staticLaserMesh, laserShader);
+  RenderObject movingLaser(movingLaserMesh, laserShader);
+  cube.AddChild(movingLaser);
 
   // Load and compile the shaders
   load_shaders();
 
   cube.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 0.0, -10.0)));
-  laser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
+  staticLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
+  movingLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
   r.AddRenderObject(cube);
-  r.AddRenderObject(laser);
+  r.AddRenderObject(staticLaser);
 
   r.SetProjectionMatrix(Matrix4::Perspective(1, 100, 1.33f, 45.0f));
   r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, 0), Vector3(0, 0, -10)));
+
   r.SetLighting(0, Vector3(5.0f, 10.0f, 10.0f), 1000.0f, Vector3(1, 1, 1));
-  r.SetLighting(1, Vector3(-2.0f, 0.0f, 10.0f), 50.0f, Vector3(1, 0, 0));
+  // Initiallty set second light to not affect scene
+  r.SetLighting(1, Vector3(0.0f, 1000.0f, 0.0f), 0.0f, Vector3(0, 0, 0));
 
   cube.SetShader(g_shaders[0]);
 
@@ -92,7 +98,8 @@ void main(void)
     << "f - Fade the cube to transaparent" << endl
     << "a - Split the cube into several smaller cubes" << endl
     << "H - Add heightmap" << endl
-    << "l - Static laser with lighting" << endl;
+    << "l - Static laser with lighting" << endl
+    << "L - Moving laser with lighting" << endl;
 
   bool rotate = true;
   bool disableDepthDuringAnim = false;
@@ -121,7 +128,9 @@ void main(void)
     // Reset scene
     if (Keyboard::KeyTriggered(KEY_R))
     {
-      laser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
+      r.SetLighting(1, Vector3(0.0f, 1000.0f, 0.0f), 0.0f, Vector3(0, 0, 0));
+      staticLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
+      movingLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
       cubeMesh->type = GL_TRIANGLES;
       glEnable(GL_DEPTH_TEST);
       r.animStop();
@@ -180,7 +189,15 @@ void main(void)
     if (Keyboard::KeyTriggered(KEY_L))
     {
       cube.SetShader(g_shaders[6]);
-      laser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 0.0, 0.0)));
+      if (Keyboard::KeyHeld(KEY_SHIFT))
+      {
+        movingLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 0.0, 0.0)));
+      }
+      else
+      {
+        staticLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 0.0, 0.0)));
+        r.SetLighting(1, Vector3(-2.0f, 0.0f, 10.0f), 50.0f, Vector3(1, 0, 0));
+      }
     }
 
     // Disable depth test part way through an animation, useful for fading to transparency
