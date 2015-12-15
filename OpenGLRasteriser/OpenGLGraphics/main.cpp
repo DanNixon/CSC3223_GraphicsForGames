@@ -3,7 +3,7 @@
 
 #pragma comment(lib, "nclgl.lib")
 
-#define NUM_SHADERS 7
+#define NUM_SHADERS 8
 Shader *g_shaders[NUM_SHADERS];
 
 void delete_shaders()
@@ -29,6 +29,7 @@ void load_shaders()
   g_shaders[4] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "split_geometry.glsl");
   g_shaders[5] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "", "detail_tcs.glsl", "detail_tes.glsl");
   g_shaders[6] = new Shader("lighting_vertex.glsl", "lighting_fragment.glsl");
+  g_shaders[7] = new Shader("nomvp_vertex.glsl", "lighting_fragment.glsl", "", "detail_tcs.glsl", "detail_tes.glsl");
 
   int failures = 0;
   for (int i = 0; i < NUM_SHADERS; i++)
@@ -99,6 +100,7 @@ void main(void)
     << "f - Fade the cube to transaparent" << endl
     << "a - Split the cube into several smaller cubes" << endl
     << "h - Add heightmap" << endl
+    << "H - Add heightmap with lighting" << endl
     << "l - Static laser with lighting" << endl
     << "L - Moving laser with lighting" << endl;
 
@@ -184,8 +186,18 @@ void main(void)
     // Add heightmap
     if (Keyboard::KeyTriggered(KEY_H))
     {
-      cubeMesh->type = GL_PATCHES;
-      cube.SetShader(g_shaders[5]);
+      if (Keyboard::KeyHeld(KEY_SHIFT))
+      {
+        // With lighting
+        cubeMesh->type = GL_PATCHES;
+        cube.SetShader(g_shaders[7]);
+      }
+      else
+      {
+        // No lighting
+        cubeMesh->type = GL_PATCHES;
+        cube.SetShader(g_shaders[5]);
+      }
     }
 
     // Laser

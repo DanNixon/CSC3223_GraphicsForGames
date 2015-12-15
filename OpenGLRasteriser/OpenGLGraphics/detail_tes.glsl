@@ -18,6 +18,8 @@ out Vertex
 {
 	vec2 texCoord;
 	vec4 colour;
+	vec3 worldPos;
+	vec3 normal;
 } OUT;
 
 vec3 TriMixVec3(vec3 a, vec3 b, vec3 c)
@@ -60,15 +62,19 @@ void main ()
 	vec3 norm = cross(v1, v0);
 	norm = normalize(norm);
 			
-	vec4 worldPos = vec4(combinedPos, 1);
+	vec4 pos = vec4(combinedPos, 1);
 
 	vec4 texCol = texture(objectTextures[2], OUT.texCoord);
 	float height = texCol.r + texCol.g + texCol.g;
 	if (height > 2.0)
 	{
 		height /= 30;
-		worldPos.xyz -= (norm * vec3(height, height, height));
+		pos.xyz -= (norm * vec3(height, height, height));
 	}
-
-	gl_Position = projMatrix * viewMatrix * modelMatrix * worldPos;
+	
+	vec4 worldPos = modelMatrix * pos;
+	OUT.worldPos = worldPos.xyz;
+	OUT.normal = norm;
+	
+	gl_Position = projMatrix * viewMatrix * worldPos;
 }

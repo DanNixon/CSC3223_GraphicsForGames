@@ -21,7 +21,7 @@ out vec4 fragCol;
 
 mat4 processLight(int idx)
 {
-	vec3 incident = normalize(lightPos[idx] - IN.worldPos);
+  vec3 incident = normalize(lightPos[idx] - IN.worldPos);
   vec3 viewDir = normalize(cameraPos - IN.worldPos);
   vec3 halfDir = normalize(incident + viewDir);
 
@@ -30,7 +30,7 @@ mat4 processLight(int idx)
   float lambert = max(0.0, dot(incident, IN.normal));
 
   float rFactor = max(0.0, dot(halfDir, IN.normal));
-  float sFactor = pow(rFactor , 50.0);
+  float sFactor = pow(rFactor, 100.0);
 
 	vec4 texCol = texture(objectTexture, IN.texCoord);
 	
