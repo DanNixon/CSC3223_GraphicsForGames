@@ -55,11 +55,12 @@ void main(void)
   GLuint cubeDestroyedTexture = r.LoadTexture("bricks_destroyed.png");
   GLuint cubeHeightmap = r.LoadTexture("bricks_heightmap.png");
 
-  // Create render objects
+  // Create cube render object
   RenderObject cube(cubeMesh, g_shaders[0], cubeNormalTexture);
   cube.SetTexture(1, cubeDestroyedTexture);
   cube.SetTexture(2, cubeHeightmap);
 
+  // Create lasers (one in a fixed position, one a child of the cube)
   Mesh *staticLaserMesh = Mesh::GenerateLine(Vector3(-2.0, 0.0, 10.0), Vector3(0.0, 0.0, -10.0));
   Mesh *movingLaserMesh = Mesh::GenerateLine(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 10.0));
   Shader *laserShader = new Shader("basic_vertex.glsl", "notex_fragment.glsl");
@@ -87,7 +88,7 @@ void main(void)
 
   // Print the list of key brindings for shader demos
   cout << endl << "Key bindings:" << endl
-    << "r - Reset scene" << endl
+    << "r - Reset scene (reset before changing demo mode)" << endl
     << "p - Pause animation" << endl
     << "P - Pause rotation" << endl
     << "0 - Reload and compile shaders" << endl
@@ -97,7 +98,7 @@ void main(void)
     << "d - Fades form the normal texture to a destroyed texture" << endl
     << "f - Fade the cube to transaparent" << endl
     << "a - Split the cube into several smaller cubes" << endl
-    << "H - Add heightmap" << endl
+    << "h - Add heightmap" << endl
     << "l - Static laser with lighting" << endl
     << "L - Moving laser with lighting" << endl;
 
@@ -128,11 +129,13 @@ void main(void)
     // Reset scene
     if (Keyboard::KeyTriggered(KEY_R))
     {
+      // Reset default values
       r.SetLighting(1, Vector3(0.0f, 1000.0f, 0.0f), 0.0f, Vector3(0, 0, 0));
       staticLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
       movingLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
       cubeMesh->type = GL_TRIANGLES;
       glEnable(GL_DEPTH_TEST);
+
       r.animStop();
       cube.SetShader(g_shaders[0]);
     }
@@ -191,11 +194,14 @@ void main(void)
       cube.SetShader(g_shaders[6]);
       if (Keyboard::KeyHeld(KEY_SHIFT))
       {
+        // Move the moving laser back into the scene
         movingLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 0.0, 0.0)));
       }
       else
       {
+        // Move the static laser back into the scene
         staticLaser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 0.0, 0.0)));
+        // Add the red light source
         r.SetLighting(1, Vector3(-2.0f, 0.0f, 10.0f), 50.0f, Vector3(1, 0, 0));
       }
     }

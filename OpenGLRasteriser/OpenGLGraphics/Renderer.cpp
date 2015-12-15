@@ -4,7 +4,7 @@ Renderer::Renderer(Window &parent)
     : OGLRenderer(parent)
     , m_time(0.0f)
     , m_animPosition(0.0f)
-    , m_animDelta(0.005)
+    , m_animDelta(0.00025)
     , m_runAnim(false)
 {
   glEnable(GL_DEPTH_TEST);
@@ -65,15 +65,20 @@ void Renderer::Render(const RenderObject &o)
 
 void Renderer::UpdateScene(float msec)
 {
-  m_time += msec;
-
   if (m_runAnim)
   {
     if (m_animPosition < 1.0)
-      m_animPosition += m_animDelta;
+    {
+      float animDelta = msec * m_animDelta;
+      m_animPosition += animDelta;
+    }
     else
+    {
       animStop();
+    }
   }
+
+  m_time += msec;
 
   for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end(); ++i)
   {
