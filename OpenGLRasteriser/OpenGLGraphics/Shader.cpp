@@ -156,8 +156,7 @@ bool Shader::LoadShaderFile(string from, string &into)
   into[into.size() - 1] = '\n';
 
   file.close();
-  cout << "Loaded shader text!" << endl
-       << endl;
+  cout << "Loaded shader text!" << endl << endl;
   return true;
 }
 
@@ -206,8 +205,7 @@ GLuint Shader::GenerateShader(string from, GLenum type)
     loadSuccess = false;
     return false;
   }
-  cout << "Compiling success!" << endl
-       << endl;
+  cout << "Compiling success!" << endl << endl;
   return shader;
 }
 

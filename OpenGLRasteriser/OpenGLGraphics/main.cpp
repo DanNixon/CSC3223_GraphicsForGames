@@ -27,9 +27,11 @@ void load_shaders()
   g_shaders[2] = new Shader("basic_vertex.glsl", "texfade_fragment.glsl");
   g_shaders[3] = new Shader("basic_vertex.glsl", "fade_fragment.glsl");
   g_shaders[4] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "split_geometry.glsl");
-  g_shaders[5] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "", "detail_tcs.glsl", "detail_tes.glsl");
+  g_shaders[5] = new Shader("nomvp_vertex.glsl", "basic_fragment.glsl", "", "detail_tcs.glsl",
+                            "detail_tes.glsl");
   g_shaders[6] = new Shader("lighting_vertex.glsl", "lighting_fragment.glsl");
-  g_shaders[7] = new Shader("nomvp_vertex.glsl", "lighting_fragment.glsl", "", "detail_tcs.glsl", "detail_tes.glsl");
+  g_shaders[7] = new Shader("nomvp_vertex.glsl", "lighting_fragment.glsl", "", "detail_tcs.glsl",
+                            "detail_tes.glsl");
 
   int failures = 0;
   for (int i = 0; i < NUM_SHADERS; i++)
@@ -88,25 +90,26 @@ void main(void)
   cube.SetShader(g_shaders[0]);
 
   // Print the list of key brindings for shader demos
-  cout << endl << "Key bindings:" << endl
-    << "r - Reset scene (reset before changing demo mode)" << endl
-    << "p - Pause animation" << endl
-    << "P - Pause rotation" << endl
-    << "0 - Reload and compile shaders" << endl
-    << "+ - Zoom in" << endl
-    << "- - Zoom out" << endl
-    << "s - Shrink the cube until it disappears" << endl
-    << "d - Fades form the normal texture to a destroyed texture" << endl
-    << "f - Fade the cube to transaparent" << endl
-    << "a - Split the cube into several smaller cubes" << endl
-    << "h - Add heightmap" << endl
-    << "H - Add heightmap with lighting" << endl
-    << "l - Static laser with lighting" << endl
-    << "L - Moving laser with lighting" << endl;
+  cout << endl
+       << "Key bindings:" << endl
+       << "r - Reset scene (reset before changing demo mode)" << endl
+       << "p - Pause animation" << endl
+       << "P - Pause rotation" << endl
+       << "0 - Reload and compile shaders" << endl
+       << "+ - Zoom in" << endl
+       << "- - Zoom out" << endl
+       << "s - Shrink the cube until it disappears" << endl
+       << "d - Fades form the normal texture to a destroyed texture" << endl
+       << "f - Fade the cube to transaparent" << endl
+       << "a - Split the cube into several smaller cubes" << endl
+       << "h - Add heightmap" << endl
+       << "H - Add heightmap with lighting" << endl
+       << "l - Static laser with lighting" << endl
+       << "L - Moving laser with lighting" << endl;
 
   bool rotate = true;
   bool disableDepthDuringAnim = false;
-  
+
   while (w.UpdateWindow())
   {
     float msec = w.GetTimer()->GetTimedMS();

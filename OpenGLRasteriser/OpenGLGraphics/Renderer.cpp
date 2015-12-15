@@ -20,7 +20,8 @@ Renderer::~Renderer(void)
 
 void Renderer::RenderScene()
 {
-  for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end(); ++i)
+  for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end();
+       ++i)
   {
     Render(*(*i));
   }
@@ -41,7 +42,7 @@ void Renderer::Render(const RenderObject &o)
     Matrix3 rotation = Matrix3(viewMatrix);
     Vector3 invCamPos = viewMatrix.GetPositionVector();
     Vector3 camPos = rotation * -invCamPos;
-    glUniform3fv(glGetUniformLocation(program, "cameraPos"), 1, (float*)&camPos);
+    glUniform3fv(glGetUniformLocation(program, "cameraPos"), 1, (float *)&camPos);
 
     glUniform1f(glGetUniformLocation(program, "animPosition"), m_animPosition);
 
@@ -80,7 +81,8 @@ void Renderer::UpdateScene(float msec)
 
   m_time += msec;
 
-  for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end(); ++i)
+  for (vector<RenderObject *>::iterator i = m_renderObjects.begin(); i != m_renderObjects.end();
+       ++i)
   {
     (*i)->Update(msec);
   }
@@ -107,7 +109,8 @@ void Renderer::animStop()
 
 GLuint Renderer::LoadTexture(string filename)
 {
-  return SOIL_load_OGL_texture(filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+  return SOIL_load_OGL_texture(filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+                               SOIL_FLAG_MIPMAPS);
 }
 
 void Renderer::SetLighting(int i, const Vector3 &position, float radius, const Vector3 &colour)
@@ -119,11 +122,11 @@ void Renderer::SetLighting(int i, const Vector3 &position, float radius, const V
 
 void Renderer::ApplyShaderLight(GLuint program)
 {
-  glUniform3fv(glGetUniformLocation(program, "lightPos[0]"), 1, (float*)&(m_light[0].position));
+  glUniform3fv(glGetUniformLocation(program, "lightPos[0]"), 1, (float *)&(m_light[0].position));
   glUniform1f(glGetUniformLocation(program, "lightRadius[0]"), m_light[0].radius);
-  glUniform3fv(glGetUniformLocation(program, "lightColour[0]"), 1, (float*)&(m_light[0].colour));
+  glUniform3fv(glGetUniformLocation(program, "lightColour[0]"), 1, (float *)&(m_light[0].colour));
 
-  glUniform3fv(glGetUniformLocation(program, "lightPos[1]"), 1, (float*)&(m_light[1].position));
+  glUniform3fv(glGetUniformLocation(program, "lightPos[1]"), 1, (float *)&(m_light[1].position));
   glUniform1f(glGetUniformLocation(program, "lightRadius[1]"), m_light[1].radius);
-  glUniform3fv(glGetUniformLocation(program, "lightColour[1]"), 1, (float*)&(m_light[1].colour));
+  glUniform3fv(glGetUniformLocation(program, "lightColour[1]"), 1, (float *)&(m_light[1].colour));
 }

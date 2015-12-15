@@ -110,7 +110,7 @@ Mesh *Mesh::GenerateTriangle()
   return m;
 }
 
-Mesh *Mesh::GenerateLine(const Vector3 &from, const Vector3& to)
+Mesh *Mesh::GenerateLine(const Vector3 &from, const Vector3 &to)
 {
   Mesh *m = new Mesh();
   m->type = GL_LINES;
@@ -276,7 +276,7 @@ void Mesh::BufferData()
     glGenBuffers(1, &bufferObject[NORMAL_BUFFER]);
     glBindBuffer(GL_ARRAY_BUFFER, bufferObject[NORMAL_BUFFER]);
     glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Vector3), normals, GL_STATIC_DRAW);
-    
+
     glVertexAttribPointer(NORMAL_BUFFER, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(NORMAL_BUFFER);
   }
@@ -296,12 +296,12 @@ void Mesh::GenerateNormals()
     Vector3 &a = vertices[i];
     Vector3 &b = vertices[i + 1];
     Vector3 &c = vertices[i + 2];
-    
+
     Vector3 normal = Vector3::Cross(b - a, c - a);
     normal.Normalise();
-    
+
     normals[i] = normal;
     normals[i + 1] = normal;
     normals[i + 2] = normal;
-  }  
+  }
 }

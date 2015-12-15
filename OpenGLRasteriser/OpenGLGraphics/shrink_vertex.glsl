@@ -18,15 +18,15 @@ out Vertex
 
 void main(void)
 {
-	float f = 1 - animPosition;
-	gl_Position = (projMatrix * viewMatrix * modelMatrix) * vec4(position, 1.0)
-								* mat4(
-											 vec4(f, 0, 0, 0),
-											 vec4(0, f, 0, 0),
-											 vec4(0, 0, f, 0),
-											 vec4(0, 0, 0, 1)
-											 );
-	
-	OUT.texCoord = texCoord;
-	OUT.colour = colour;
+  float f = 1 - animPosition;
+  gl_Position = (projMatrix * viewMatrix * modelMatrix) * vec4(position, 1.0)
+                  * mat4(
+                        vec4(f, 0, 0, 0),
+                        vec4(0, f, 0, 0),
+                        vec4(0, 0, f, 0),
+                        vec4(0, 0, 0, 1)
+                        );
+
+  OUT.texCoord = texCoord;
+  OUT.colour = colour;
 }

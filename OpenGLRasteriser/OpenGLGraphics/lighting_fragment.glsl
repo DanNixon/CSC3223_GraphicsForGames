@@ -11,10 +11,10 @@ uniform float lightRadius[2];
 
 in Vertex
 {
-	vec2 texCoord;
-	vec4 colour;
-	vec3 worldPos;
-	vec3 normal;
+  vec2 texCoord;
+  vec4 colour;
+  vec3 worldPos;
+  vec3 normal;
 } IN;
 
 out vec4 fragCol;
@@ -32,26 +32,26 @@ mat4 processLight(int idx)
   float rFactor = max(0.0, dot(halfDir, IN.normal));
   float sFactor = pow(rFactor, 100.0);
 
-	vec4 texCol = texture(objectTexture, IN.texCoord);
-	
-	mat4 light;
-	// Texture colour
-	light[0] = texCol;
-	// Ambient
+  vec4 texCol = texture(objectTexture, IN.texCoord);
+
+  mat4 light;
+  // Texture colour
+  light[0] = texCol;
+  // Ambient
   light[1].rgb = texCol.rgb * lightColour[idx] * 0.1;
-	// Diffuse
+  // Diffuse
   light[2].rgb = texCol.rgb * lightColour[idx] * lambert * atten;
-	// Specular
+  // Specular
   light[3].rgb = lightColour[idx] * sFactor * atten;
-	
-	return light;
+
+  return light;
 }
 
 void main(void)
 {
-	mat4 light1 = processLight(0);
-	mat4 light2 = processLight(1);
-	
+  mat4 light1 = processLight(0);
+  mat4 light2 = processLight(1);
+
   fragCol = vec4(light1[1].rgb + light1[2].rgb + light1[3].rgb + light2[3].rgb,
-								 light1[0].a);
+                 light1[0].a);
 }

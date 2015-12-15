@@ -5,15 +5,15 @@ uniform sampler2D objectTextures[5];
 
 in Vertex
 {
-	vec2 texCoord;
-	vec4 colour;
+  vec2 texCoord;
+  vec4 colour;
 } IN;
 
 out vec4 fragCol;
 
 void main(void)
 {
-	vec4 col = texture(objectTextures[0], IN.texCoord);
-	col.a = 1 - animPosition;
-	fragCol = col;
+  vec4 col = texture(objectTextures[0], IN.texCoord);
+  col.a = 1 - animPosition;
+  fragCol = col;
 }
