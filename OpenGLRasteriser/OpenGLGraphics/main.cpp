@@ -55,19 +55,29 @@ void main(void)
   GLuint cubeDestroyedTexture = r.LoadTexture("bricks_destroyed.png");
   GLuint cubeHeightmap = r.LoadTexture("bricks_heightmap.png");
 
-  // Load and compile the shaders
-  load_shaders();
-
+  // Create render objects
   RenderObject cube(cubeMesh, g_shaders[0], cubeNormalTexture);
   cube.SetTexture(1, cubeDestroyedTexture);
   cube.SetTexture(2, cubeHeightmap);
 
-  cube.SetModelMatrix(Matrix4::Translation(Vector3(0, 0, -10)) * Matrix4::Scale(Vector3(1, 1, 1)));
+  Mesh *laserMesh = Mesh::GenerateLine(Vector3(-2.0, 0.0, 10.0), Vector3(0.0, 0.0, -10.0));
+  Shader *laserShader = new Shader("basic_vertex.glsl", "notex_fragment.glsl");
+  RenderObject laser(laserMesh, laserShader);
+
+  // Load and compile the shaders
+  load_shaders();
+
+  cube.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 0.0, -10.0)));
+  laser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
   r.AddRenderObject(cube);
+  r.AddRenderObject(laser);
 
   r.SetProjectionMatrix(Matrix4::Perspective(1, 100, 1.33f, 45.0f));
   r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, 0), Vector3(0, 0, -10)));
-  r.SetLighting(Vector3(10.0f, 5.0f, 0.0f), 100.0f, Vector3(1, 1, 1));
+  r.SetLighting(0, Vector3(5.0f, 10.0f, 10.0f), 1000.0f, Vector3(1, 1, 1));
+  r.SetLighting(1, Vector3(-2.0f, 0.0f, 10.0f), 50.0f, Vector3(1, 0, 0));
+
+  cube.SetShader(g_shaders[0]);
 
   // Print the list of key brindings for shader demos
   cout << endl << "Key bindings:" << endl
@@ -81,8 +91,8 @@ void main(void)
     << "d - Fades form the normal texture to a destroyed texture" << endl
     << "f - Fade the cube to transaparent" << endl
     << "a - Split the cube into several smaller cubes" << endl
-    << "c - Detail and crack the cube" << endl
-    << "l - Lighting" << endl;
+    << "H - Add heightmap" << endl
+    << "l - Static laser with lighting" << endl;
 
   bool rotate = true;
   bool disableDepthDuringAnim = false;
@@ -111,6 +121,7 @@ void main(void)
     // Reset scene
     if (Keyboard::KeyTriggered(KEY_R))
     {
+      laser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 1000.0, 0.0)));
       cubeMesh->type = GL_TRIANGLES;
       glEnable(GL_DEPTH_TEST);
       r.animStop();
@@ -158,19 +169,18 @@ void main(void)
       r.animStart();
     }
 
-    // Detail and crack the cube
-    if (Keyboard::KeyTriggered(KEY_C))
+    // Add heightmap
+    if (Keyboard::KeyTriggered(KEY_H))
     {
       cubeMesh->type = GL_PATCHES;
       cube.SetShader(g_shaders[5]);
-      r.animStart();
     }
 
-    // Lighting
+    // Laser
     if (Keyboard::KeyTriggered(KEY_L))
     {
       cube.SetShader(g_shaders[6]);
-      r.animStart();
+      laser.SetModelMatrix(Matrix4::Translation(Vector3(0.0, 0.0, 0.0)));
     }
 
     // Disable depth test part way through an animation, useful for fading to transparency

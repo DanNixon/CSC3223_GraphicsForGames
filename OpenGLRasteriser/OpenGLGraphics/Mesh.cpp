@@ -105,6 +105,30 @@ Mesh *Mesh::GenerateTriangle()
   m->colours[2] = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 
   m->BufferData();
+  m->GenerateNormals();
+
+  return m;
+}
+
+Mesh *Mesh::GenerateLine(const Vector3 &from, const Vector3& to)
+{
+  Mesh *m = new Mesh();
+  m->type = GL_LINES;
+  m->numVertices = 2;
+
+  m->vertices = new Vector3[m->numVertices];
+  m->vertices[0] = from;
+  m->vertices[1] = to;
+
+  m->textureCoords = new Vector2[m->numVertices];
+  m->textureCoords[0] = Vector2(1.0f, 1.0f);
+  m->textureCoords[1] = Vector2(0.0f, 1.0f);
+
+  m->colours = new Vector4[m->numVertices];
+  m->colours[0] = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+  m->colours[1] = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+  m->BufferData();
 
   return m;
 }
@@ -119,6 +143,7 @@ Mesh *Mesh::LoadMeshFile(const string &filename)
   }
 
   Mesh *m = new Mesh();
+  m->type = GL_TRIANGLES;
   f >> m->numVertices;
 
   int hasTex = 0;

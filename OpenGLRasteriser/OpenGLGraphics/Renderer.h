@@ -18,6 +18,7 @@ class Renderer : public OGLRenderer
 {
 public:
   static const int NUM_TEXTURES = 5;
+  static const int NUM_LIGHTS = 2;
 
   Renderer(Window &parent);
   ~Renderer(void);
@@ -44,7 +45,7 @@ public:
 
   GLuint LoadTexture(string filename);
 
-  void SetLighting(const Vector3 &position, float radius, const Vector3 &colour);
+  void SetLighting(int i, const Vector3 &position, float radius, const Vector3 &colour);
 
 protected:
   void ApplyShaderLight(GLuint program);
@@ -54,5 +55,5 @@ protected:
   float m_animDelta;
   bool m_runAnim;
   vector<RenderObject *> m_renderObjects;
-  Light m_light;
+  Light m_light[NUM_LIGHTS];
 };

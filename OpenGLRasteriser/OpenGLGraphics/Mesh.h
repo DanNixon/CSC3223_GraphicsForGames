@@ -51,6 +51,7 @@ public:
 
   // Generates a single triangle, with RGB colours
   static Mesh *GenerateTriangle();
+  static Mesh *GenerateLine(const Vector3 &from, const Vector3& to);
   static Mesh *LoadMeshFile(const string &filename);
 
   GLuint type; // Primitive type for this mesh (GL_TRIANGLES...etc)
